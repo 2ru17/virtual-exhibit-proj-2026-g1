@@ -90,74 +90,19 @@ The exhibit will feature a single-column stacked layout on mobile devices (break
 ---
 
 ## User Journey Flowchart
-┌─────────────────┐
-│   USER ARRIVES  │
-│   AT EXHIBIT    │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  READS STAGE 1  │
-│  (Healthy heart)│
-│  Reads tooltip  │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  CLICKS HEART   │
-│  (starts attack)│
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  SEES CRACKING  │
-│  HEART + LEAKS  │
-│  (Stage 2 begins)│
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  CLICKS AGAIN   │
-│  (more leaks)   │
-│  More popups    │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  HEART DIES     │
-│  (Stage 3 begins│
-│   automatically)│
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  EXPLORES       │
-│  AFFECTED SITES │
-│  (clicks logos) │
-│  Sees tooltips  │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  CLICKS FIX     │
-│  BUTTONS        │
-│  Learns about:  │
-│  - The patch    │
-│  - Economic cost│
-│  - Funding issue│
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  READS TIMELINE │
-│  (historical    │
-│   context)      │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  UNDERSTANDS    │
-│  THE FULL STORY │
-│  (exhibit goal  │
-│   achieved)     │
-└─────────────────┘
+```mermaid
+flowchart TD
+    A[User Arrives at Exhibit]
+    B[Reads Stage 1<br/>Healthy Heart<br/>Reads Tooltip]
+    C[Clicks Heart<br/>Starts Attack]
+    D[Sees Cracking Heart + Leaks<br/>Stage 2 Begins]
+    E[Clicks Again<br/>More Leaks<br/>More Popups]
+    F[Heart Dies<br/>Stage 3 Begins Automatically]
+    G[Explores Affected Sites<br/>Clicks Logos<br/>Sees Tooltips]
+    H[Clicks Fix Buttons<br/>Learns About Patch, Economic Cost, Funding Issue]
+    I[Reads Timeline<br/>Historical Context]
+    J[Understands the Full Story<br/>Exhibit Goal Achieved]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I --> J
+```
+
