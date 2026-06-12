@@ -85,7 +85,7 @@ The exhibit will feature a single-column stacked layout on mobile devices (break
 
 ### **Tentative Style Guide Snapshot**
 
-**[Mock Up Design](canva.link/virtual-exhib-grp1-csarch2)**
+**[Mock Up Design](https://canva.link/virtual-exhib-grp1-csarch2)**
 
 **Aesthetic Direction**
 
