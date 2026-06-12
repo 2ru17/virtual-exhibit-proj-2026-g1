@@ -30,15 +30,12 @@ Heartbleed is one of the most devastating security vulnerabilities in Internet h
 2. **Network Packet Anatomy:** The exhibit will visualize the invisible network layer by comparing standard vs. malicious TLS heartbeat packets. To provide an authentic vulnerability assessment experience, we will display real Wireshark packet captures of a Heartbleed payload instead of simulated text. By examining these realistic hex dumps, users will see exactly how the vulnerability tricked the server logic by manipulating the "Payload Length" variable.  
 3. **The Open-Source Paradox:** This section provides a sociological and economic breather from the technical data by exploring the human element of the bug. It will be structured as a dramatic narrative: covering the well-meaning flawed code commit in 2011, the two years it sat unnoticed while OpenSSL secured the web, the frantic simultaneous discovery by security researchers, and the ultimate resolution where the tech industry formed the Core Infrastructure Initiative to finally fund the open-source projects they relied upon.
 
-`Revised Part ^^^`
-
 ## **Group’s Tech Stack Plan:**
 
 * **Runtime & Framework:** Node.js 26 and Astro 6\. This ensures compatibility when all repositories are merged into the central museum website.  
 * **UI/Components:**  
   * React (.jsx or .tsx) will be used to build interactive simulations embedded in .mdx content pages.  
   * Three.js (via React Three Fiber) will be utilized to render the interactive 3D wireframe globe for the Stage 3 climax on desktop viewports.
-  * * `Added this ^^^`  
   * Tailwind CSS for utility-first styling, scoped to the exhibit's visual theme while remaining compatible with the central museum template.  
 * **Version Control:** All incremental plans, source code, and documentation will be hosted on GitHub. Team members will manage local Git credential configurations to ensure accurate commit histories prior to the final merge.
 
@@ -62,7 +59,6 @@ The user clicks the heart to simulate sending a malformed heartbeat request — 
 
 * Visual: Shrink animation, dripping binary particles, progressive info card reveals  
   * Realistic hex dumps and string extractions mirroring what an analyst would see during a vulnerability assessment or in a Wireshark packet capture. It will display mocked leaked memory bytes alongside decoded ASCII text (e.g., 0x0040: ... S E S S I O N \_ I D \= ..., private key fragments, and plaintext credentials)
-  * `Revised Part ^^^`
     * More random popup windows alongside the leaked memory windows would serve to display tiny details that could showcase the timeline of events  
 * User interaction: Click to send malformed requests  
 * Educational goal: Allow the user to simplify and visualize the severity of the memory leaks that occurred through the stylized popup windows.
@@ -94,7 +90,6 @@ The exhibit will feature a single-column stacked layout on mobile devices (break
 **Aesthetic Direction**
 
 * Dark and synthwave-inspired. Will lean into the [Heartbleed](https://www.heartbleed.com/) brand but with a twist: it utilizes vibrant, high-contrast colors (bright pinks, purples, and cyans) against a dark background. This creates a stylized "cyberpunk forensic" aesthetic that makes the vulnerability feel visually striking and urgent. Typography uses a monospace technical font to ground the neon visuals in raw system architecture.
-* `Revised Part ^^^`
 
 **Component Library**
 
