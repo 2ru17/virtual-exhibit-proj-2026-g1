@@ -1,5 +1,45 @@
 # Virtual Exhibit Case Proposal - Group 1
 
+## Mid-Milestone Submission
+
+**Website / Deployment:** [https://2ru17.github.io/virtual-exhibit-proj-2026-g1/](https://2ru17.github.io/virtual-exhibit-proj-2026-g1/)
+
+### Submission Checklist
+
+- Website is running with a proper layout
+- Technical content is complete and correct for the current milestone scope
+- Reference citations are included below
+- AI / LLM disclosure is included below
+- Interactive elements are present in partial form through the exhibit simulation plan and React components
+
+### Incremental Development Log
+
+- Started from the original Heartbleed exhibit proposal and organized the README into a mid-milestone submission document.
+- Fixed the GitHub Pages configuration so the built site points to the correct repository deployment path.
+- Added the deployed website link so the submission can be reviewed directly.
+- Added a submission checklist so the remaining grading items are visible in one place.
+- Kept the interactive exhibit plan in the README because it documents the intended simulation flow and the current development direction.
+
+### Things Still To Be Done
+
+- Finish the remaining interactive Heartbleed simulation details in `HeartbleedSimulation.jsx`.
+- Add the final exhibit content and polish the responsive layout for the presentation phase.
+- Replace any placeholder copy or mock assets with final exhibit material before the final submission.
+
+### AI / LLM Disclosure
+
+This repository was assisted by an AI coding agent for documentation cleanup, deployment-path fixes, and README organization. All technical decisions, exhibit scope, and final validation remain the responsibility of the project group.
+
+### References
+
+- OpenSSL Security Advisory: [Heartbleed (CVE-2014-0160)](https://www.openssl.org/news/secadv/20140407.txt)
+- Heartbleed overview: [heartbleed.com](https://www.heartbleed.com/)
+- NVD entry: [CVE-2014-0160](https://nvd.nist.gov/vuln/detail/CVE-2014-0160)
+
+---
+
+# Virtual Exhibit Case Proposal - Group 1
+
 **Section:** S03
 **Category:** Problem Solving Stories
 
