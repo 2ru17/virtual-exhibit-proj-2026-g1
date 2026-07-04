@@ -1,0 +1,47 @@
+---
+layout: '../layouts/ExhibitLayout.astro'
+title: "The Heartbleed Bug (CVE-2014-0160)"
+author: "TODO: Add author name(s)"
+readingTime: "TODO"
+---
+
+{/* Exhibit-specific theme (colors + fonts) and simulation components */}
+
+import '../styles/heartbleed-theme.css'
+import '@fontsource-variable/jetbrains-mono'
+import '@fontsource-variable/space-grotesk'
+
+import HeartbleedSimulation from '../components/HeartbleedSimulation.jsx'
+import HeartbleedTimeline from '../components/HeartbleedTimeline.jsx'
+
+# The Heartbleed Bug (CVE-2014-0160)
+
+*(TODO: intro copy — what Heartbleed is and why it mattered)*
+
+## Stage 1: Healthy Server Heart
+
+*(TODO: explain the normal TLS heartbeat request/response)*
+
+<HeartbleedSimulation stage="healthy" client:load />
+
+## Stage 2: Under Attack
+
+*(TODO: explain the malformed heartbeat and the memory it leaks)*
+
+<HeartbleedSimulation stage="attack" client:load />
+
+## Stage 3: The Aftermath
+
+*(TODO: explain the fallout — patch, affected services, disclosure)*
+
+<HeartbleedSimulation stage="aftermath" client:load />
+
+## Historical Timeline
+
+*(TODO: intro copy for the timeline)*
+
+<HeartbleedTimeline client:load />
+
+## References
+
+- TODO
