@@ -8,9 +8,10 @@
  *   - "aftermath" Stage 3: the fallout across the wider web
  */
 
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import HeartWireframe from "./heartbleed/HeartWireframe";
 import WireframeGlobe from "./heartbleed/WireframeGlobe";
+import DraggablePopup from "./heartbleed/PopupBoxes";
 
 function InfoCallout({ title, accent = "primary", className = "", children }) {
   const accentClass = {
@@ -31,6 +32,57 @@ function InfoCallout({ title, accent = "primary", className = "", children }) {
       </div>
       <div className="px-3 py-2 leading-relaxed text-white/85">{children}</div>
     </div>
+  );
+}
+
+function DigitBurst({ triggerKey }) {
+  const digits = useMemo(() => {
+    const count = 10;
+    return Array.from({ length: count }, (_, i) => {
+      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+      const distance = 30 + Math.random() * 20;
+      return {
+        id: i,
+        char: Math.random() < 0.5 ? "0" : "1",
+        tx: Math.cos(angle) * distance,
+        ty: Math.sin(angle) * distance,
+        delay: (Math.random() * 0.15).toFixed(2),
+      };
+    });
+  }, [triggerKey]);
+
+  if (triggerKey === 0) return null;
+
+  return (
+    <g key={triggerKey}>
+      <style>{`
+        @keyframes digit-burst {
+          0% { opacity: 1; transform: translate(0, 0) scale(1); }
+          100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.6); }
+        }
+        .digit-burst {
+          animation: digit-burst 0.7s ease-out forwards;
+        }
+      `}</style>
+      {digits.map((d) => (
+        <text
+          key={d.id}
+          x="0"
+          y="0"
+          fontSize="6"
+          fill="#ff3131"
+          textAnchor="middle"
+          className="digit-burst"
+          style={{
+            "--tx": `${d.tx}px`,
+            "--ty": `${d.ty}px`,
+            animationDelay: `${d.delay}s`,
+          }}
+        >
+          {d.char}
+        </text>
+      ))}
+    </g>
   );
 }
 
@@ -115,8 +167,64 @@ function StageHealthy() {
 }
 
 function StageAttack() {
-  const [leaking, setLeaking] = useState(false);
-  const trigger = () => setLeaking(true);
+  const [clickCount, setClickCount] = useState(0);
+  const [popups, setPopups] = useState([]);
+  const nextZ = useRef(1);
+
+  const boxPool = [
+    {
+      title: "what went wrong",
+      accent: "primary",
+      text: "Client claims payload = 64,000 bytes but sends only 3. OpenSSL trusts the claimed length.",
+    },
+    {
+      title: "the bleed",
+      accent: "secondary",
+      text: "Server allocates a 64KB response buffer, copying adjacent process memory to fill the gap.",
+    },
+    {
+      title: "what leaks",
+      accent: "cyan",
+      text: "session tokens · private keys · passwords · cookies",
+    },
+  ];
+
+  const trigger = () => {
+    setClickCount((c) => c + 1);
+
+    const template = boxPool[Math.floor(Math.random() * boxPool.length)];
+    const id = Date.now() + Math.random();
+
+    const step = 32;
+    const cols = 4;
+    const index = popups.length;
+    const cascadeX = index % cols;
+    const cascadeY = Math.floor(index / cols) % cols;
+
+    const x = 30 + cascadeX * step * 2.4;
+    const y = 20 + cascadeY * step;
+
+    nextZ.current += 1;
+
+    setPopups((prev) => [...prev, { id, ...template, x, y, z: nextZ.current }]);
+  };
+
+  const focusPopup = (id) => {
+    nextZ.current += 1;
+    setPopups((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, z: nextZ.current } : p))
+    );
+  };
+
+  const movePopup = (id, x, y) => {
+    setPopups((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
+  };
+
+  const closePopup = (id) => {
+    setPopups((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const leaking = clickCount > 0;
 
   const leaks = [
     { label: "user:admin", delay: "0.1s" },
@@ -125,120 +233,156 @@ function StageAttack() {
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-hb-red/30 bg-hb-bg p-6 font-body text-white sm:p-10">
+    <div
+      className="relative overflow-hidden rounded-lg border border-hb-red/30 bg-hb-bg p-6 font-body text-white sm:p-10"
+      style={{ minHeight: 420 }}
+    >
+      <style>{`
+        @keyframes heart-pop {
+          0% { transform: scale(1) translateY(0); }
+          35% { transform: scale(1.25) translateY(-10px); }
+          60% { transform: scale(0.95) translateY(2px); }
+          100% { transform: scale(1) translateY(0); }
+        }
+        .heart-pop {
+          animation: heart-pop 0.45s ease-out;
+        }
+      `}</style>
+
       <p className="mb-6 font-heading text-xs uppercase tracking-widest text-hb-secondary">
         Stage 02 — Under Attack
       </p>
 
-      <div className="grid gap-6 lg:grid-cols-[14rem_1fr_14rem]">
-        <div className="flex flex-col gap-4">
-          <InfoCallout title="what went wrong">
-            Client claims payload = 64,000 bytes but sends only 3. OpenSSL trusts
-            the claimed length.
-          </InfoCallout>
-          <InfoCallout title="the bleed" accent="secondary">
-            Server allocates a 64KB response buffer, copying adjacent process
-            memory to fill the gap.
-          </InfoCallout>
+      <div className="relative flex flex-col items-center justify-start">
+        <div key={clickCount} className={clickCount > 0 ? "heart-pop" : ""}>
+          <HeartWireframe color="#ff3131" pulse="normal" onClick={trigger}>
+            <DigitBurst triggerKey={clickCount} />
+          </HeartWireframe>
         </div>
 
-        <div className="relative flex flex-col items-center justify-start">
-          <HeartWireframe
-            color="#ff3131"
-            pulse={leaking ? "fast" : "normal"}
-            onClick={trigger}
-          />
-
-          <div className="relative mt-2 h-24 w-full">
-            <LeakDrip active={leaking} />
-            {leaking && (
-              <div className="flex flex-col items-center gap-1 pt-6 font-heading text-xs text-hb-red">
-                {leaks.map((leak) => (
-                  <span
-                    key={leak.label}
-                    className="animate-reveal"
-                    style={{ animationDelay: leak.delay }}
-                  >
-                    {leak.label}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 lg:items-end">
-          <InfoCallout title="what leaks" accent="cyan" className="lg:text-right">
-            session tokens · private keys · passwords · cookies
-          </InfoCallout>
-
-          <button
-            type="button"
-            onClick={trigger}
-            className="mt-auto w-56 rounded-md border border-hb-primary px-3 py-2 text-center font-heading text-xs text-hb-primary transition-colors hover:bg-hb-primary/10"
-          >
-            Click heart to send malformed request ↗
-          </button>
+        <div className="relative mt-2 h-24 w-full">
+          <LeakDrip key={clickCount} active={leaking} />
+          {leaking && (
+            <div
+              key={clickCount}
+              className="flex flex-col items-center gap-1 pt-6 font-heading text-xs text-hb-red"
+            >
+              {leaks.map((leak) => (
+                <span
+                  key={leak.label}
+                  className="animate-reveal"
+                  style={{ animationDelay: leak.delay }}
+                >
+                  {leak.label}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+
+      {popups.map((p) => (
+        <DraggablePopup
+          key={p.id}
+          id={p.id}
+          title={p.title}
+          accent={p.accent}
+          x={p.x}
+          y={p.y}
+          zIndex={p.z}
+          onFocus={focusPopup}
+          onMove={movePopup}
+          onClose={closePopup}
+        >
+          {p.text}
+        </DraggablePopup>
+      ))}
     </div>
   );
 }
 
 function StageAftermath() {
-  const [selected, setSelected] = useState("yahoo");
+  const [selected, setSelected] = useState(null);
+  const [heartClicks, setHeartClicks] = useState(0);
+  const [activeInfo, setActiveInfo] = useState(null);
 
   const markers = {
     imgur: {
       label: "Imgur",
       left: "18%",
-      detail: "Patched same day OpenSSL 1.0.1g shipped; no confirmed data loss reported.",
+      title: "Imgur",
+      accent: "primary",
+      text: "Patched same day OpenSSL 1.0.1g shipped; no confirmed data loss reported.",
     },
     lastpass: {
       label: "LastPass",
       left: "38%",
-      detail: "Prompted users to rotate their master passwords as a precaution.",
+      title: "LastPass",
+      accent: "secondary",
+      text: "Prompted users to rotate their master passwords as a precaution.",
     },
     yahoo: {
       label: "Yahoo",
       left: "78%",
-      detail: "500M+ accounts · patched: Apr 8, 2014",
+      title: "Yahoo",
+      accent: "cyan",
+      text: "500M+ accounts · patched: Apr 8, 2014",
       warn: true,
     },
   };
 
+  const triggerHeart = () => {
+    setHeartClicks((c) => c + 1);
+  };
+
+  const handleMarkerClick = (key) => {
+    setSelected(key);
+    setActiveInfo(key);
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+      setActiveInfo(null);
+    }, 3000);
+  };
+
   return (
-    <div className="relative overflow-hidden rounded-lg border border-hb-secondary/30 bg-hb-bg p-6 font-body text-white sm:p-10">
-      <p className="mb-6 font-heading text-xs uppercase tracking-widest text-hb-secondary">
+    <div
+      className="relative overflow-hidden rounded-lg border border-hb-secondary/30 bg-hb-bg p-6 font-body text-white sm:p-10"
+      style={{ minHeight: 500 }}
+    >
+      <p className="mb-4 font-heading text-xs uppercase tracking-widest text-hb-secondary">
         Stage 03 — The Aftermath
       </p>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_14rem]">
-        <div className="relative">
-          <div className="relative flex justify-center pb-4">
-            <HeartWireframe color="#ff279e" size={140} pulse="normal" />
-            <div className="absolute inset-0">
-              <LeakDrip active count={10} colorClass="text-hb-primary" />
-            </div>
+      <div className="relative" style={{ height: 400 }}>
+        {/* Holo-table floor - fills the container */}
+        <div className="absolute inset-0 -m-6 sm:-m-10">
+          <WireframeGlobe />
+        </div>
+
+        {/* Heart on top - centered above the globe */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          <div key={heartClicks} className={heartClicks > 0 ? "heart-pop" : ""}>
+            <HeartWireframe color="#ff279e" size={120} pulse="normal" onClick={triggerHeart} />
           </div>
+        </div>
 
-          <div className="relative flex justify-center">
-            <WireframeGlobe />
-
+        {/* Buttons on the globe surface */}
+        <div className="absolute bottom-20 left-0 right-0 z-10">
+          <div className="relative flex justify-center w-full px-10">
             {Object.entries(markers).map(([key, marker]) => (
               <button
                 key={key}
                 type="button"
-                onClick={() => setSelected(key)}
+                onClick={() => handleMarkerClick(key)}
                 style={{ left: marker.left }}
-                className={`absolute top-1/3 flex -translate-x-1/2 flex-col items-center gap-1 font-heading text-[11px] ${
+                className={`absolute top-0 flex -translate-x-1/2 flex-col items-center gap-1 font-heading text-[11px] transition-all ${
                   marker.warn ? "text-hb-red" : "text-white/70"
-                }`}
+                } ${selected === key ? "scale-110" : ""}`}
               >
                 <span
-                  className={`h-2.5 w-2.5 rounded-full border ${
+                  className={`h-2.5 w-2.5 rounded-full border transition-all ${
                     selected === key
-                      ? "border-white bg-hb-red"
+                      ? "border-white bg-hb-red shadow-lg shadow-hb-red/50"
                       : "border-white/50 bg-black/40"
                   }`}
                   aria-hidden="true"
@@ -247,27 +391,40 @@ function StageAftermath() {
               </button>
             ))}
           </div>
+        </div>
 
-          <div className="mt-4 min-h-[3rem] text-center font-heading text-xs text-hb-red">
-            {markers[selected]?.detail}
+        {/* Info callout that appears on click - not draggable */}
+        {activeInfo && markers[activeInfo] && (
+          <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-reveal">
+            <InfoCallout 
+              title={markers[activeInfo].title} 
+              accent={markers[activeInfo].accent}
+              className="w-64"
+            >
+              {markers[activeInfo].text}
+            </InfoCallout>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <InfoCallout title="The patch" accent="primary">
-            OpenSSL 1.0.1g, released April 7, 2014, added the missing bounds
-            check on the TLS heartbeat extension.
-          </InfoCallout>
-          <InfoCallout title="Affected OSes" accent="secondary">
-            Most major Linux distributions (Ubuntu, Debian, CentOS, RHEL) had
-            to patch OpenSSL and reissue TLS certificates.
-          </InfoCallout>
-          <InfoCallout title="OpenSSL funding" accent="cyan">
-            Heartbleed exposed how underfunded OpenSSL was, prompting the
-            Linux Foundation's Core Infrastructure Initiative.
-          </InfoCallout>
-        </div>
+        )}
       </div>
+
+      <style>{`
+        @keyframes heart-pop {
+          0% { transform: scale(1) translateY(0); }
+          35% { transform: scale(1.25) translateY(-10px); }
+          60% { transform: scale(0.95) translateY(2px); }
+          100% { transform: scale(1) translateY(0); }
+        }
+        .heart-pop {
+          animation: heart-pop 0.45s ease-out;
+        }
+        @keyframes reveal {
+          0% { opacity: 0; transform: translate(-50%, 10px); }
+          100% { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-reveal {
+          animation: reveal 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
