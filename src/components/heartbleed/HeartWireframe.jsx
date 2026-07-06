@@ -53,7 +53,9 @@ export default function HeartWireframe({
             }
           : undefined
       }
-      className={`overflow-visible ${onClick ? "cursor-pointer" : ""} ${pulseClass} ${className}`}
+      className={`overflow-visible outline-none ${
+        onClick ? "cursor-pointer focus-visible:drop-shadow-[0_0_6px_rgba(255,39,158,0.85)]" : ""
+      } ${pulseClass} ${className}`}
       style={{ transformOrigin: "50% 50%" }}
     >
       <g fill="none" stroke={color} strokeLinecap="round">

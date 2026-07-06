@@ -13,28 +13,6 @@ import HeartWireframe from "./heartbleed/HeartWireframe";
 import WireframeGlobe from "./heartbleed/WireframeGlobe";
 import DraggablePopup from "./heartbleed/PopupBoxes";
 
-function InfoCallout({ title, accent = "primary", className = "", children }) {
-  const accentClass = {
-    primary: "border-hb-primary text-hb-primary",
-    cyan: "border-hb-cyan text-hb-cyan",
-    secondary: "border-hb-secondary text-hb-secondary",
-  }[accent];
-
-  return (
-    <div
-      className={`w-56 rounded-md border bg-hb-bg/95 font-body text-xs shadow-lg shadow-black/40 ${accentClass} ${className}`}
-    >
-      <div
-        className={`flex items-center gap-1.5 border-b px-3 py-1.5 font-heading text-[10px] uppercase tracking-wide ${accentClass}`}
-      >
-        <span aria-hidden="true">✕</span>
-        {title}
-      </div>
-      <div className="px-3 py-2 leading-relaxed text-white/85">{children}</div>
-    </div>
-  );
-}
-
 function DigitBurst({ triggerKey }) {
   const digits = useMemo(() => {
     const count = 10;
@@ -88,13 +66,20 @@ function DigitBurst({ triggerKey }) {
 
 function LeakDrip({ active, count = 16, colorClass = "text-hb-red" }) {
   if (!active) return null;
-  const drops = Array.from({ length: count }, (_, i) => ({
-    id: i,
-    left: Math.round((i / count) * 100 + ((i % 3) - 1) * 3),
-    delay: ((i * 0.37) % 2).toFixed(2),
-    duration: (1.6 + ((i * 0.53) % 1.4)).toFixed(2),
-    char: i % 2 === 0 ? "1" : "0",
-  }));
+  // Emanate from a narrow point near the center (the heart's tip) and drift
+  // outward slightly as each drop falls, so it reads as spraying/leaking out
+  // of the heart rather than a flat row of static text.
+  const drops = Array.from({ length: count }, (_, i) => {
+    const spread = i / (count - 1) - 0.5; // -0.5..0.5
+    return {
+      id: i,
+      left: 50 + spread * 30 + ((i % 3) - 1) * 2,
+      drift: (spread * 34).toFixed(1),
+      delay: ((i * 0.37) % 2).toFixed(2),
+      duration: (1.6 + ((i * 0.53) % 1.4)).toFixed(2),
+      char: i % 2 === 0 ? "1" : "0",
+    };
+  });
 
   return (
     <div
@@ -107,6 +92,7 @@ function LeakDrip({ active, count = 16, colorClass = "text-hb-red" }) {
           className={`animate-drip absolute top-0 font-heading text-xs ${colorClass}`}
           style={{
             left: `${d.left}%`,
+            "--drip-drift": `${d.drift}px`,
             animationDelay: `${d.delay}s`,
             animationDuration: `${d.duration}s`,
           }}
@@ -115,6 +101,22 @@ function LeakDrip({ active, count = 16, colorClass = "text-hb-red" }) {
         </span>
       ))}
     </div>
+  );
+}
+
+function TypewriterText({ text, delay = "0s" }) {
+  const chars = text.length;
+  return (
+    <span
+      className="inline-block overflow-hidden whitespace-nowrap border-r-2 pr-0.5 align-bottom"
+      style={{
+        width: 0,
+        "--tw-final-width": `${chars}ch`,
+        animation: `typewriter 0.6s steps(${chars}, end) ${delay} forwards, blink-caret 0.8s step-end ${delay} infinite`,
+      }}
+    >
+      {text}
+    </span>
   );
 }
 
@@ -227,9 +229,9 @@ function StageAttack() {
   const leaking = clickCount > 0;
 
   const leaks = [
-    { label: "user:admin", delay: "0.1s" },
-    { label: "pk: -----BE", delay: "0.5s" },
-    { label: "tok:a9f3c...", delay: "0.9s" },
+    { label: "user:admin", delay: "0.2s" },
+    { label: "pk: -----BE", delay: "0.8s" },
+    { label: "tok:a9f3c...", delay: "1.4s" },
   ];
 
   return (
@@ -260,21 +262,15 @@ function StageAttack() {
           </HeartWireframe>
         </div>
 
-        <div className="relative mt-2 h-24 w-full">
-          <LeakDrip key={clickCount} active={leaking} />
+        <div className="relative mx-auto mt-2 h-24 w-40">
+          <LeakDrip key={`drip-${clickCount}`} active={leaking} />
           {leaking && (
             <div
-              key={clickCount}
+              key={`leaks-${clickCount}`}
               className="flex flex-col items-center gap-1 pt-6 font-heading text-xs text-hb-red"
             >
               {leaks.map((leak) => (
-                <span
-                  key={leak.label}
-                  className="animate-reveal"
-                  style={{ animationDelay: leak.delay }}
-                >
-                  {leak.label}
-                </span>
+                <TypewriterText key={leak.label} text={leak.label} delay={leak.delay} />
               ))}
             </div>
           )}
@@ -302,47 +298,90 @@ function StageAttack() {
 }
 
 function StageAftermath() {
-  const [selected, setSelected] = useState(null);
   const [heartClicks, setHeartClicks] = useState(0);
-  const [activeInfo, setActiveInfo] = useState(null);
+  const [popups, setPopups] = useState([]);
+  // Starts above the heart's z-20 wrapper so popups always render on top of it
+  // and the globe, regardless of click order.
+  const nextZ = useRef(50);
 
-  const markers = {
-    imgur: {
-      label: "Imgur",
-      left: "18%",
-      title: "Imgur",
-      accent: "primary",
-      text: "Patched same day OpenSSL 1.0.1g shipped; no confirmed data loss reported.",
-    },
-    lastpass: {
-      label: "LastPass",
-      left: "38%",
-      title: "LastPass",
-      accent: "secondary",
-      text: "Prompted users to rotate their master passwords as a precaution.",
-    },
-    yahoo: {
-      label: "Yahoo",
-      left: "78%",
-      title: "Yahoo",
-      accent: "cyan",
-      text: "500M+ accounts · patched: Apr 8, 2014",
-      warn: true,
-    },
-  };
+  const markers = useMemo(
+    () => ({
+      imgur: {
+        label: "Imgur",
+        theta: -1.15,
+        phi: (Math.PI / 2) * 0.82,
+        title: "Imgur",
+        accent: "primary",
+        text: "Patched same day OpenSSL 1.0.1g shipped; no confirmed data loss reported.",
+      },
+      lastpass: {
+        label: "LastPass",
+        theta: -0.1,
+        phi: (Math.PI / 2) * 0.82,
+        title: "LastPass",
+        accent: "secondary",
+        text: "Prompted users to rotate their master passwords as a precaution.",
+      },
+      yahoo: {
+        label: "Yahoo",
+        theta: 1.3,
+        phi: (Math.PI / 2) * 0.82,
+        title: "Yahoo",
+        accent: "cyan",
+        text: "500M+ accounts · patched: Apr 8, 2014",
+        warn: true,
+      },
+    }),
+    []
+  );
 
   const triggerHeart = () => {
     setHeartClicks((c) => c + 1);
   };
 
   const handleMarkerClick = (key) => {
-    setSelected(key);
-    setActiveInfo(key);
-    // Auto-dismiss after 3 seconds
-    setTimeout(() => {
-      setActiveInfo(null);
-    }, 3000);
+    const marker = markers[key];
+
+    setPopups((prev) => {
+      const existing = prev.find((p) => p.key === key);
+      nextZ.current += 1;
+
+      if (existing) {
+        return prev.map((p) => (p.key === key ? { ...p, z: nextZ.current } : p));
+      }
+
+      return [
+        ...prev,
+        {
+          id: `${key}-${Date.now()}`,
+          key,
+          title: marker.title,
+          accent: marker.accent,
+          text: marker.text,
+          x: 24 + prev.length * 28,
+          y: 24 + prev.length * 24,
+          z: nextZ.current,
+        },
+      ];
+    });
   };
+
+  const focusPopup = (id) => {
+    nextZ.current += 1;
+    setPopups((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, z: nextZ.current } : p))
+    );
+  };
+
+  const movePopup = (id, x, y) => {
+    setPopups((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
+  };
+
+  const closePopup = (id) => {
+    setPopups((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const activeKeys = popups.map((p) => p.key);
 
   return (
     <div
@@ -354,57 +393,45 @@ function StageAftermath() {
       </p>
 
       <div className="relative" style={{ height: 400 }}>
-        {/* Holo-table floor - fills the container */}
+        {/* Holo-table floor - fills the container; markers are real 3D points
+            on the globe, projected to screen space every frame so they track
+            the camera's orbit like they're attached to the rotating surface. */}
         <div className="absolute inset-0 -m-6 sm:-m-10">
-          <WireframeGlobe />
+          <WireframeGlobe markers={markers} activeKeys={activeKeys} onSelect={handleMarkerClick} />
         </div>
 
-        {/* Heart on top - centered above the globe */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+        {/* Heart floats above the globe, leaking binary down into it */}
+        <div className="absolute left-1/2 top-4 z-20 flex -translate-x-1/2 flex-col items-center pointer-events-none sm:top-6">
           <div key={heartClicks} className={heartClicks > 0 ? "heart-pop" : ""}>
-            <HeartWireframe color="#ff279e" size={120} pulse="normal" onClick={triggerHeart} />
+            <HeartWireframe
+              color="#ff279e"
+              size={110}
+              pulse="normal"
+              onClick={triggerHeart}
+              className="pointer-events-auto"
+            />
+          </div>
+          <div className="relative h-28 w-24">
+            <LeakDrip active count={10} colorClass="text-hb-primary" />
           </div>
         </div>
 
-        {/* Buttons on the globe surface */}
-        <div className="absolute bottom-20 left-0 right-0 z-10">
-          <div className="relative flex justify-center w-full px-10">
-            {Object.entries(markers).map(([key, marker]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleMarkerClick(key)}
-                style={{ left: marker.left }}
-                className={`absolute top-0 flex -translate-x-1/2 flex-col items-center gap-1 font-heading text-[11px] transition-all ${
-                  marker.warn ? "text-hb-red" : "text-white/70"
-                } ${selected === key ? "scale-110" : ""}`}
-              >
-                <span
-                  className={`h-2.5 w-2.5 rounded-full border transition-all ${
-                    selected === key
-                      ? "border-white bg-hb-red shadow-lg shadow-hb-red/50"
-                      : "border-white/50 bg-black/40"
-                  }`}
-                  aria-hidden="true"
-                />
-                {marker.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Info callout that appears on click - not draggable */}
-        {activeInfo && markers[activeInfo] && (
-          <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-reveal">
-            <InfoCallout 
-              title={markers[activeInfo].title} 
-              accent={markers[activeInfo].accent}
-              className="w-64"
-            >
-              {markers[activeInfo].text}
-            </InfoCallout>
-          </div>
-        )}
+        {popups.map((p) => (
+          <DraggablePopup
+            key={p.id}
+            id={p.id}
+            title={p.title}
+            accent={p.accent}
+            x={p.x}
+            y={p.y}
+            zIndex={p.z}
+            onFocus={focusPopup}
+            onMove={movePopup}
+            onClose={closePopup}
+          >
+            {p.text}
+          </DraggablePopup>
+        ))}
       </div>
 
       <style>{`
