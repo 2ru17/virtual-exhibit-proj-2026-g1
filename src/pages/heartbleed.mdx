@@ -1,8 +1,8 @@
 ---
 layout: '../layouts/ExhibitLayout.astro'
 title: "The Heartbleed Bug (CVE-2014-0160)"
-author: "TODO: Add author name(s)"
-readingTime: "TODO"
+author: "Gutang, Quijano, Tan, Tolentino, Wong"
+readingTime: "5min"
 ---
 
 {/* Exhibit-specific theme (colors + fonts) and simulation components */}
@@ -16,19 +16,25 @@ import HeartbleedTimeline from '../components/HeartbleedTimeline.jsx'
 
 # The Heartbleed Bug (CVE-2014-0160)
 
-*(TODO: intro copy — what Heartbleed is and why it mattered)*
+*Heartbleed is one of the most devastating security vulnerabilities in Internet history. Disclosed on April 7, 2014, it exploited a missing bounds check in OpenSSL's implementation of the TLS heartbeat extension. By sending a malformed heartbeat request with a mismatched payload length, an attacker could trick a vulnerable server into returning up to 64KB of its own process memory per request — including private keys, session tokens, and plaintext credentials — with no trace in server logs. This exhibit tells the full story: from the architectural flaw in OpenSSL's buffer handling, to the frantic global patch effort, to the long tail of unpatched servers that remained vulnerable for years. Heartbleed is a canonical case study in how a single missing line of validation code can compromise the internet's encrypted backbone.*
+
+<br/>
 
 ## Stage 1: Healthy Server Heart
 
-*(TODO: explain the normal TLS heartbeat request/response)*
+The heart pulses rhythmically to simulate a live TLS heartbeat exchange.
 
 <HeartbleedSimulation stage="healthy" client:load />
 
+<br/>
+
 ## Stage 2: Under Attack
 
-*(TODO: explain the malformed heartbeat and the memory it leaks)*
+The user clicks the heart to simulate sending a malformed heartbeat request — one that claims a payload of 64KB but actually sends only a few bytes. Pop-up info cards appear progressively, revealing context about the exploit mechanics.
 
 <HeartbleedSimulation stage="attack" client:load />
+
+<br/>
 
 ## Stage 3: The Aftermath
 
