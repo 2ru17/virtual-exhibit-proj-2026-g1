@@ -189,6 +189,41 @@ function StageAttack() {
       accent: "cyan",
       text: "session tokens · private keys · passwords · cookies",
     },
+    {
+      title: "the fix",
+      accent: "primary",
+      text: "OpenSSL 1.0.1g added a bounds check that rejects payload lengths larger than the actual data sent.",
+    },
+    {
+      title: "who found it",
+      accent: "secondary",
+      text: "Discovered independently by Google Security and Codenomicon in early 2014.",
+    },
+    {
+      title: "primary key material",
+      accent: "primary",
+      text: "Encryption keys themselves were stolen. Stolen keys let an attacker decrypt past and future traffic and impersonate the server entirely.",
+    },
+    {
+      title: "secondary key material",
+      accent: "secondary",
+      text: "Usernames and passwords for the vulnerable service. Recovery means invalidating every session cookie and forcing a full password reset.",
+    },
+    {
+      title: "protected content",
+      accent: "cyan",
+      text: "The actual data being protected — private messages, financial info, business documents. Only the service owner can know for sure what was exposed.",
+    },
+    {
+      title: "Zero detection markers",
+      accent: "primary",
+      text: "Exploiting this bug leaves nothing unusual in server logs. A victim had no way to know they were attacked after the fact.",
+    },
+    {
+      title: "Unlimited/Capless data",
+      accent: "secondary",
+      text: "There's no hard cap on total data stolen. An attacker could repeat the request endlessly, pulling a fresh 64KB chunk of memory each time.",
+    },
   ];
 
   const trigger = () => {
@@ -323,13 +358,45 @@ function StageAftermath() {
         text: "Prompted users to rotate their master passwords as a precaution.",
       },
       yahoo: {
-        label: "Yahoo",
-        theta: 1.3,
+      label: "Yahoo",
+      theta: 1.3,
+      phi: (Math.PI / 2) * 0.82,
+      title: "Yahoo",
+      accent: "cyan",
+      text: "500M+ accounts · patched: Apr 8, 2014",
+      warn: true,
+      },
+      codenomicon: {
+        label: "Codenomicon",
+        theta: -1.15,
         phi: (Math.PI / 2) * 0.82,
-        title: "Yahoo",
+        title: "Who found it",
+        accent: "primary",
+        text: "Independently discovered by a Codenomicon security team and Neel Mehta of Google Security, both reporting it around the same time in early April 2014.",
+      },
+      openssl: {
+        label: "OpenSSL",
+        theta: -0.1,
+        phi: (Math.PI / 2) * 0.82,
+        title: "The fix",
+        accent: "secondary",
+        text: "OpenSSL 1.0.1g, released April 7 2014, patched the bug. Versions 1.0.1 through 1.0.1f were vulnerable; 1.0.0 and 0.9.8 branches never were.",
+      },
+      apache_nginx: {
+        label: "Apache/nginx",
+        theta: 2.4,
+        phi: (Math.PI / 2) * 0.6,
+        title: "How widespread",
+        accent: "primary",
+        text: "Apache and nginx alone made up over 66% of active web servers at the time, and both commonly relied on OpenSSL for encryption.",
+      },
+      twoyears: {
+        label: "2 years exposed",
+        theta: -2.2,
+        phi: (Math.PI / 2) * 0.6,
+        title: "How long it existed",
         accent: "cyan",
-        text: "500M+ accounts · patched: Apr 8, 2014",
-        warn: true,
+        text: "The bug was introduced to OpenSSL in December 2011 and remained live in the wild for over two years before it was discovered and fixed.",
       },
     }),
     []
