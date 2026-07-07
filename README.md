@@ -21,12 +21,22 @@
 - Kept the interactive exhibit plan in the README because it documents the intended simulation flow and the current development direction.
 - Refined the Heartbleed article typography so the exhibit prose reads more cleanly while staying consistent with the neon security theme.
 - Kept the styling work localized to the Heartbleed theme file so the rest of the exhibit layout remains unchanged.
+- Merged the separate "Key Events" list into the interactive historical timeline component to avoid duplicated content and improve narrative flow.
+- Reworked timeline visuals into themed event cards (date, event title, significance badge) for a more customized and less plain presentation.
+- Improved long-form text readability and spacing across the Heartbleed page; code blocks now wrap long lines to remove the need for horizontal scrolling.
+- Standardized heading typography rhythm across the page so subsection titles use a cleaner, line-aligned style consistent with the timeline look.
+- Upgraded chapter-level section headers into themed visual blocks and removed ad-hoc manual line breaks, so spacing is controlled consistently by CSS.
+- Refactored the Stage 3 content into component-based aftermath chapters so "The Aftermath," "Affected Services," and "The Response" now use the same left-rail alignment logic as the timeline cards.
+- Added chapter-level style variants with a shared structural scaffold to keep vertical rhythm and left-edge alignment consistent while still giving each chapter a distinct look.
+- Refactored all Table of Contents chapters into reusable component blocks with a shared chapter-card scaffold for consistent left-guide alignment, spacing, and padding.
+- Fixed chapter-card text contrast by switching to darker foreground text on lighter chapter backgrounds while preserving the Heartbleed neon accent system.
+- Reworked the chapter refactor into decoupled, standalone section components to restore breathing room and preserve intuitive exhibit flow, while keeping global theme/layout constraints intact.
 
 ### Things Still To Be Done
 
-- Finish the remaining interactive Heartbleed simulation details in `HeartbleedSimulation.jsx`, especially the later-stage transitions and polish.
-- Add the final exhibit content and verify the responsive layout on smaller screens and presentation-sized displays.
-- Replace any placeholder copy or mock assets with final exhibit material before the final submission.
+- Finish the remaining interactive Heartbleed simulation details in `HeartbleedSimulation.jsx`, especially additional stage transitions and polish.
+- Verify all interactions and content density on smaller screens and presentation-sized displays.
+- Replace any remaining placeholder copy or mock assets with final exhibit material before final submission.
 
 ### AI / LLM Disclosure
 
