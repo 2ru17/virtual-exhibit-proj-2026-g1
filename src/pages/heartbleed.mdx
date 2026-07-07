@@ -1,94 +1,79 @@
----
 layout: '../layouts/ExhibitLayout.astro'
 title: "The Heartbleed Bug (CVE-2014-0160)"
-<<<<<<< Updated upstream
-author: "Gutang, Quijano, Tan, Tolentino, Wong"
-readingTime: "5min"
-=======
 author: "Group 1: Gutang, Quijano, Tan, Tolentino, Wong"
 readingTime: "12 min"
->>>>>>> Stashed changes
+
 ---
 
 {/* Exhibit-specific theme (colors + fonts) and simulation components */}
 
-import '../styles/heartbleed-theme.css'
-import '@fontsource-variable/jetbrains-mono'
-import '@fontsource-variable/space-grotesk'
+import "../styles/heartbleed-theme.css";
 
-import HeartbleedSimulation from '../components/HeartbleedSimulation.jsx'
-import HeartbleedTimeline from '../components/HeartbleedTimeline.jsx'
+import HeartbleedSimulation from "../components/HeartbleedSimulation.jsx";
+import HeartbleedTimeline from "../components/HeartbleedTimeline.jsx";
 
 # The Heartbleed Bug (CVE-2014-0160)
-*When the Internet's heart started bleeding secrets.*
-On April 7, 2014, the cybersecurity world was fundamentally changed by the disclosure of CVE-2014-0160 — better known as the Heartbleed Bug. This critical vulnerability in OpenSSL's implementation of the TLS heartbeat extension allowed attackers to read up to 64 KB of server memory per request, exposing private keys, session tokens, and plaintext credentials. The flaw stemmed from a single missing bounds check in code committed over two years earlier, and its impact rippled across the Internet, affecting hundreds of thousands of internet-facing servers running vulnerable versions of OpenSSL, including many of the world's most popular websites.
-Heartbleed represents a canonical case study in how a single missing validation check can compromise the encrypted backbone of the Internet. This exhibit explores the architecture of the vulnerability, demonstrates how the attack worked, and examines the lasting impact it had on modern cybersecurity and open-source software development.
 
-<<<<<<< Updated upstream
-*Heartbleed is one of the most devastating security vulnerabilities in Internet history. Disclosed on April 7, 2014, it exploited a missing bounds check in OpenSSL's implementation of the TLS heartbeat extension. By sending a malformed heartbeat request with a mismatched payload length, an attacker could trick a vulnerable server into returning up to 64KB of its own process memory per request — including private keys, session tokens, and plaintext credentials — with no trace in server logs. This exhibit tells the full story: from the architectural flaw in OpenSSL's buffer handling, to the frantic global patch effort, to the long tail of unpatched servers that remained vulnerable for years. Heartbleed is a canonical case study in how a single missing line of validation code can compromise the internet's encrypted backbone.*
+_When the Internet's heart started bleeding secrets._
 
-<br/>
-=======
->>>>>>> Stashed changes
+On April 7, 2014, the cybersecurity world changed when CVE-2014-0160 was disclosed: a critical flaw in OpenSSL's TLS heartbeat extension that let attackers read up to 64 KB of server memory per request. Private keys, session tokens, passwords, and other sensitive data could leak without leaving clear traces in logs.
+
+Heartbleed is a canonical case study in how a single missing validation check can compromise encrypted communications at Internet scale. This exhibit walks through the vulnerable heartbeat design, shows how the attack worked, and traces the response that followed.
 
 ## Stage 1: Healthy Server Heart
-The TLS heartbeat extension was designed as a lightweight keep-alive mechanism — a simple "ping" between client and server to maintain an active connection without the overhead of renegotiating cryptographic parameters. In a properly functioning implementation, a client sends a heartbeat request containing a payload and a length field, and the server echoes back exactly what was sent.
 
-<<<<<<< Updated upstream
+The TLS heartbeat extension was designed as a lightweight keep-alive mechanism - a simple "ping" between client and server to maintain an active connection without the overhead of renegotiating cryptographic parameters. In a properly functioning implementation, a client sends a heartbeat request containing a payload and a length field, and the server echoes back exactly what was sent.
+
 The heart pulses rhythmically to simulate a live TLS heartbeat exchange.
-=======
+
+### The Anatomy of a Heartbeat Request
+
+A standard heartbeat request contains:
+
+1. **Type**: A single byte indicating request or response
+2. **Payload Length**: A 16-bit integer specifying the expected payload size
+3. **Payload**: The actual data to be echoed back (variable length)
+4. **Padding**: Additional bytes to align the packet
+
+The vulnerability arises because the server blindly trusts the payload length provided by the client. If an attacker sends a payload length of 64KB but only sends a few bytes of actual data, the server will read 64KB of data from its heap memory - including whatever sensitive information resides there.
+
+<HeartbleedSimulation stage="healthy" client:load />
+
+## The Vulnerable Code Path
+
 ```c
-/* Vulnerable Code — OpenSSL 1.0.1 (2011-2014) (NOT THE COMPLETE SOURCE CODE) */
+/* Vulnerable Code - OpenSSL 1.0.1 (2011-2014) */
 int dtls1_process_heartbeat(SSL *s) {
     unsigned char *p = &s->s3->rrec.data[0];
     unsigned short hbtype;
     unsigned int payload_length;
     unsigned char *payload, *bp;
     int r;
->>>>>>> Stashed changes
 
     /* Read heartbeat type and length from packet */
     hbtype = *p++;
     n2s(p, payload_length);  /* No validation of payload_length */
-    
+
     /* Allocate memory for response */
     bp = OPENSSL_malloc(1 + 2 + payload_length + padding);
-    
+
     /* This copies user-controlled length bytes from memory! */
     memcpy(bp, p, payload_length);  /* Buffer over-read vulnerability */
-    
+
     /* Send response containing leaked memory */
     dtls1_write_bytes(s, TLS1_RT_HEARTBEAT, bp, 1 + 2 + payload_length + padding);
 }
 ```
 
-In the code above, the `payload_length` variable is read directly from the client's packet — with no validation that it matches the actual size of the payload. The `memcpy` operation then copies that many bytes from the server's process memory into the response buffer, regardless of whether those bytes belong to the heartbeat payload or other sensitive data stored in adjacent memory.
-
-### The Anatomy of a Heartbeat Request
-A standard heartbeat request contains:
-1. **Type**: A single byte indicating request or response
-2. **Payload Length**: A 16-bit integer specifying the expected payload size
-3. **Payload**: The actual data to be echoed back (variable length)
-4. **Padding**: Additional bytes to align the packet
-
-The vulnerability arises because the server blindly trusts the payload length provided by the client. If an attacker sends a payload length of 64KB but only sends a few bytes of actual data, the server will read 64KB of data from its heap memory — including whatever sensitive information resides there.
-<HeartbleedSimulation stage="healthy" client:load />
-
-<<<<<<< Updated upstream
-<br/>
-=======
-
----
-
->>>>>>> Stashed changes
+In the code above, `payload_length` is read directly from the client's packet with no check that it matches the actual payload size. The `memcpy` call then copies that many bytes from the server's process memory into the response buffer, whether or not those bytes belong to the heartbeat payload.
 
 ## Stage 2: Under Attack
-The attack exploits this trust by sending a malformed heartbeat request. The attacker claims a payload length of 64KB (the maximum heartbeat size) but only sends a few bytes of data. The vulnerable server, trusting the length field, responds with 64KB of its process memory — potentially containing private keys, session tokens, user credentials, or other sensitive data.
 
-<<<<<<< Updated upstream
-The user clicks the heart to simulate sending a malformed heartbeat request — one that claims a payload of 64KB but actually sends only a few bytes. Pop-up info cards appear progressively, revealing context about the exploit mechanics.
-=======
-```
+The attack exploits this trust by sending a malformed heartbeat request. The attacker claims a payload length of 64KB (the maximum heartbeat size) but only sends a few bytes of data. The vulnerable server, trusting the length field, responds with 64KB of its process memory - potentially containing private keys, session tokens, user credentials, or other sensitive data.
+
+The user clicks the heart to simulate sending a malformed heartbeat request - one that claims a payload of 64KB but actually sends only a few bytes. Pop-up info cards appear progressively, revealing context about the exploit mechanics.
+
+```text
 [Attacker]           [Vulnerable Server]
    |                         |
    |   Heartbeat Request     |
@@ -98,21 +83,21 @@ The user clicks the heart to simulate sending a malformed heartbeat request — 
    |------------------------>|
    |                         |
    | Missing bounds check!   |
-   |Server reads 65,536bytes |
-   |  from process memory    |
+   | Server reads 65,536    |
+   | bytes from memory      |
    |                         |
    |   Heartbeat Response    |
    |   [Memory dump with]    |
-   |   [private keys,      ] |
-   |   [session tokens,    ] |
-   |   [user credentials   ] |
+   |   [private keys,        ]
+   |   [session tokens,      ]
+   |   [user credentials     ]
    |<------------------------|
 ```
->>>>>>> Stashed changes
 
 ### What an Attacker Could See
 
 The leaked memory could contain:
+
 - **Private TLS keys**, which in some deployments using RSA key exchange could allow previously recorded encrypted traffic to be decrypted.
 - **Session cookies** allowing account takeover
 - **Passwords** and other credentials
@@ -120,20 +105,17 @@ The leaked memory could contain:
 - **API keys** and authentication tokens
 
 The attack typically left little or no evidence in standard server logs, making exploitation extremely difficult to detect without specialized monitoring.
+
 <HeartbleedSimulation stage="attack" client:load />
 
-<<<<<<< Updated upstream
-<br/>
+## The Race to Disclosure
 
-## Stage 3: The Aftermath
-=======
-### The Race to Disclosure
-The vulnerability was discovered independently by security researchers at Codenomicon and Google's security team. After coordinated disclosure to the OpenSSL maintainers, a patch was released on April 7, 2014. However, the patch required affected services to upgrade their OpenSSL implementations, restart their services, and — crucially — revoke and reissue their SSL certificates and session tokens.
+The vulnerability was discovered independently by security researchers at Codenomicon and Google's security team. After coordinated disclosure to the OpenSSL maintainers, a patch was released on April 7, 2014. However, the patch required affected services to upgrade their OpenSSL implementations, restart their services, and - crucially - revoke and reissue their SSL certificates and session tokens.
+
 The patch was simple but critical:
->>>>>>> Stashed changes
 
 ```c
-/* Patched Code — OpenSSL 1.0.1g (April 7, 2014) (THIS IS THE PATCHED FIXED VERSION OF THE SAME FUNCTION) */
+/* Patched Code - OpenSSL 1.0.1g (April 7, 2014) */
 int dtls1_process_heartbeat(SSL *s) {
     unsigned char *p = &s->s3->rrec.data[0];
     unsigned short hbtype;
@@ -144,30 +126,29 @@ int dtls1_process_heartbeat(SSL *s) {
     /* Read heartbeat type and length from packet */
     hbtype = *p++;
     n2s(p, payload_length);
-    
+
     /* Validate that length doesn't exceed what's available */
     if (1 + 2 + payload_length + 16 > s->s3->rrec.length)
-        return 0;  /* Invalid request — drop it */
-    
+        return 0;  /* Invalid request - drop it */
+
     payload = &p[0];
     bp = OPENSSL_malloc(1 + 2 + payload_length + padding);
-    
+
     /* Now this copies only valid payload data */
     memcpy(bp, p, payload_length);
-    
+
     dtls1_write_bytes(s, TLS1_RT_HEARTBEAT, bp, 1 + 2 + payload_length + padding);
 }
 ```
 
-
----
-
-
 ## Stage 3: The Aftermath
+
 The Heartbleed vulnerability exposed fundamental weaknesses in how the tech industry approached open-source software security. While major services scrambled to patch their systems, the full scope of the damage remained unknown due to the attack's undetectable nature.
 
 ### Affected Services
+
 Some of the most popular online services were affected, including:
+
 - Yahoo
 - OKCupid
 - LastPass
@@ -176,14 +157,19 @@ Some of the most popular online services were affected, including:
 - Various banks and government portals
 
 ### The Response
-The response to Heartbleed was swift but chaotic. System administrators worldwide worked around the clock to patch servers, revoke compromised certificates, and force password resets. The patch alone wasn't enough — any server that had been vulnerable had potentially been compromised, requiring a comprehensive security audit.
+
+The response to Heartbleed was swift but chaotic. System administrators worldwide worked around the clock to patch servers, revoke compromised certificates, and force password resets. The patch alone wasn't enough - any server that had been vulnerable had potentially been compromised, requiring a comprehensive security audit.
 
 ### The Open-Source Paradox
+
 Heartbleed highlighted a critical paradox: OpenSSL was securing the vast majority of the internet's encrypted traffic, yet its maintenance was largely volunteer-driven and critically underfunded. At the time of Heartbleed's disclosure, the OpenSSL project was maintained by only a handful of core developers and operated with extremely limited funding despite protecting a significant portion of the Internet's encrypted communications. The incident highlighted the risks of relying on critical infrastructure that lacked sufficient financial and engineering support.
+
 This led to the formation of the Core Infrastructure Initiative (CII) in April 2014, a collaborative effort backed by major tech companies to provide sustained funding and security auditing for critical open-source infrastructure projects. The CII committed over $5 million in its first year to support OpenSSL and other critical projects.
 
 ### Lessons Learned
+
 The Heartbleed vulnerability taught the tech industry several critical lessons:
+
 1. **Security requires validation at every boundary**: Trusting user-supplied values without validation is a recipe for disaster
 2. **Memory safety matters**: Memory-safe programming languages such as Rust are designed to prevent this class of memory over-read vulnerability through compile-time safety guarantees
 3. **Open-source needs sustainable funding**: Critical infrastructure can't be maintained on goodwill alone
@@ -192,36 +178,54 @@ The Heartbleed vulnerability taught the tech industry several critical lessons:
 
 <HeartbleedSimulation stage="aftermath" client:load />
 
-
-
 ## Historical Timeline
+
 The story of Heartbleed spans from a well-meaning code commit to a global security crisis that reshaped how the tech industry approaches open-source security.
+
 <HeartbleedTimeline client:load />
+
 ### Key Events
+
 **December 2011**
+
 - A well-meaning developer commits the heartbeat extension code to OpenSSL, introducing the bounds-check vulnerability that would go unnoticed for over two years.
 
 **April 2014**
+
 - Security researchers at Codenomicon and Google independently discover the vulnerability
 - The OpenSSL project is notified and begins work on a patch
 - April 7: Disclosure of CVE-2014-0160 sends shockwaves through the internet
 - Administrators worldwide race to patch their servers
 
 **April 2014 (Late)**
+
 - The Core Infrastructure Initiative is formed to provide sustainable funding for critical open-source projects
 - Major tech companies pledge millions to secure the open-source ecosystem
 
-**2015–Present**
+**2015-Present**
+
 - OpenSSL adopts more rigorous testing and review processes
 - The vulnerability serves as a wake-up call for memory-safe programming languages
 - TLS 1.3 is developed with improved security properties
 
 ## References
 
-Carroll, S. (2021, April 7). *Heartbleed, seven years later: A look back at the bug that broke the internet*. Security Intelligence. https://securityintelligence.com/posts/heartbleed-seven-years-later-bug-broke-internet/
-Codenomicon. (2014). *The Heartbleed Bug*. https://www.heartbleed.com/
-Goodin, D. (2014, April 7). *Heartbleed bug exposes millions of SSL/TLS connections to snooping*. Ars Technica. https://arstechnica.com/information-technology/2014/04/heartbleed-bug-exposes-millions-of-ssl-tls-connections-to-snooping/
-National Institute of Standards and Technology. (2014). *National Vulnerability Database: CVE-2014-0160*. https://nvd.nist.gov/vuln/detail/CVE-2014-0160
-OpenSSL. (2014, April 7). *OpenSSL Security Advisory: Heartbleed (CVE-2014-0160)*. https://www.openssl.org/news/secadv/20140407.txt
-The Linux Foundation. (2014). *Core Infrastructure Initiative*. https://www.linuxfoundation.org/projects/core-infrastructure-initiative/
+Carroll, S. (2021, April 7). _Heartbleed, seven years later: A look back at the bug that broke the internet_. Security Intelligence. https://securityintelligence.com/posts/heartbleed-seven-years-later-bug-broke-internet/
+Codenomicon. (2014). _The Heartbleed Bug_. https://www.heartbleed.com/
+Goodin, D. (2014, April 7). _Heartbleed bug exposes millions of SSL/TLS connections to snooping_. Ars Technica. https://arstechnica.com/information-technology/2014/04/heartbleed-bug-exposes-millions-of-ssl-tls-connections-to-snooping/
+National Institute of Standards and Technology. (2014). _National Vulnerability Database: CVE-2014-0160_. https://nvd.nist.gov/vuln/detail/CVE-2014-0160
+OpenSSL. (2014, April 7). _OpenSSL Security Advisory: Heartbleed (CVE-2014-0160)_. https://www.openssl.org/news/secadv/20140407.txt
+The Linux Foundation. (2014). _Core Infrastructure Initiative_. https://www.linuxfoundation.org/projects/core-infrastructure-initiative/
 
+- OpenSSL adopts more rigorous testing and review processes
+- The vulnerability serves as a wake-up call for memory-safe programming languages
+- TLS 1.3 is developed with improved security properties
+
+## References
+
+Carroll, S. (2021, April 7). _Heartbleed, seven years later: A look back at the bug that broke the internet_. Security Intelligence. https://securityintelligence.com/posts/heartbleed-seven-years-later-bug-broke-internet/
+Codenomicon. (2014). _The Heartbleed Bug_. https://www.heartbleed.com/
+Goodin, D. (2014, April 7). _Heartbleed bug exposes millions of SSL/TLS connections to snooping_. Ars Technica. https://arstechnica.com/information-technology/2014/04/heartbleed-bug-exposes-millions-of-ssl-tls-connections-to-snooping/
+National Institute of Standards and Technology. (2014). _National Vulnerability Database: CVE-2014-0160_. https://nvd.nist.gov/vuln/detail/CVE-2014-0160
+OpenSSL. (2014, April 7). _OpenSSL Security Advisory: Heartbleed (CVE-2014-0160)_. https://www.openssl.org/news/secadv/20140407.txt
+The Linux Foundation. (2014). _Core Infrastructure Initiative_. https://www.linuxfoundation.org/projects/core-infrastructure-initiative/
