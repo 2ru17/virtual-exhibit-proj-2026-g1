@@ -8,10 +8,14 @@ export function Stage1HealthyServerChapter() {
                 Stage 1 Context
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
-                The TLS heartbeat extension was designed as a lightweight keep-alive mechanism to maintain an active encrypted connection without renegotiation.
+                The TLS heartbeat extension was designed as a lightweight
+                keep-alive mechanism to maintain an active encrypted connection
+                without renegotiation.
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
-                In a proper implementation, the client sends a payload and declared length, and the server echoes exactly the same payload size back.
+                In a proper implementation, the client sends a payload and
+                declared length, and the server echoes exactly the same payload
+                size back.
             </p>
             <div className="mt-6">
                 <HeartbleedSimulation stage="healthy" />
@@ -27,15 +31,30 @@ export function AnatomyHeartbeatChapter() {
                 <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#20566f]">
                     Packet Anatomy
                 </p>
-                <p className="mt-3 text-[1rem] leading-8 text-[#1f3552]">A standard heartbeat request contains:</p>
+                <p className="mt-3 text-[1rem] leading-8 text-[#1f3552]">
+                    A standard heartbeat request contains:
+                </p>
                 <ol className="mt-3 list-decimal pl-6 text-[1rem] leading-8 text-[#1f3552] marker:font-heading marker:text-[#2a6180]">
-                    <li><strong>Type</strong>: A single byte indicating request or response.</li>
-                    <li><strong>Payload Length</strong>: A 16-bit integer specifying the expected payload size.</li>
-                    <li><strong>Payload</strong>: The actual data to be echoed back.</li>
-                    <li><strong>Padding</strong>: Additional bytes used to align the packet.</li>
+                    <li>
+                        <strong>Type</strong>: A single byte indicating request
+                        or response.
+                    </li>
+                    <li>
+                        <strong>Payload Length</strong>: A 16-bit integer
+                        specifying the expected payload size.
+                    </li>
+                    <li>
+                        <strong>Payload</strong>: The actual data to be echoed
+                        back.
+                    </li>
+                    <li>
+                        <strong>Padding</strong>: Additional bytes used to align
+                        the packet.
+                    </li>
                 </ol>
                 <p className="mt-4 text-[1rem] leading-8 text-[#1f3552]">
-                    The core flaw appears when the server trusts the declared length even when actual payload bytes are shorter.
+                    The core flaw appears when the server trusts the declared
+                    length even when actual payload bytes are shorter.
                 </p>
             </div>
         </section>
@@ -63,7 +82,8 @@ int dtls1_process_heartbeat(SSL *s) {
 }`}</code>
             </pre>
             <p className="mt-4 text-[1rem] leading-8 text-[#2f2550]">
-                Without verifying payload_length against available bytes, memcpy reads beyond the heartbeat payload and leaks process memory.
+                Without verifying payload_length against available bytes, memcpy
+                reads beyond the heartbeat payload and leaks process memory.
             </p>
         </section>
     );
@@ -76,7 +96,9 @@ export function Stage2UnderAttackChapter() {
                 Attack Simulation
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#3b2b49]">
-                Attackers claim a maximum-size heartbeat payload while sending only a few bytes. The vulnerable server trusts the claim and returns a large memory slice.
+                Attackers claim a maximum-size heartbeat payload while sending
+                only a few bytes. The vulnerable server trusts the claim and
+                returns a large memory slice.
             </p>
             <pre className="mt-4 rounded-xl border border-[#9d638d]/30 bg-[#fdf0f8] p-4 font-heading text-[0.8rem] leading-6 text-[#402845] overflow-x-auto">
                 <code>{`[Attacker] -- heartbeat(length=65536, payload="Hi") --> [Server]
@@ -97,14 +119,15 @@ export function AttackerCouldSeeChapter() {
                     Likely Memory Exposure
                 </p>
                 <ul className="mt-3 list-disc pl-6 text-[1rem] leading-8 text-[#1f3650] marker:text-[#1d6f84]">
-                <li>Private TLS keys</li>
-                <li>Session cookies and authentication tokens</li>
-                <li>Passwords and user credentials</li>
-                <li>Email or message fragments in memory</li>
-                <li>API keys and operational secrets</li>
+                    <li>Private TLS keys</li>
+                    <li>Session cookies and authentication tokens</li>
+                    <li>Passwords and user credentials</li>
+                    <li>Email or message fragments in memory</li>
+                    <li>API keys and operational secrets</li>
                 </ul>
                 <p className="mt-4 text-[1rem] leading-8 text-[#1f3650]">
-                    Exploitation often left minimal forensic traces, which made reliable incident confirmation difficult after the fact.
+                    Exploitation often left minimal forensic traces, which made
+                    reliable incident confirmation difficult after the fact.
                 </p>
             </div>
         </section>
@@ -118,10 +141,13 @@ export function RaceToDisclosureChapter() {
                 Coordinated Disclosure
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2e2550]">
-                Researchers at Codenomicon and Google independently identified the bug and coordinated disclosure with OpenSSL maintainers.
+                Researchers at Codenomicon and Google independently identified
+                the bug and coordinated disclosure with OpenSSL maintainers.
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2e2550]">
-                The OpenSSL 1.0.1g patch introduced strict bounds validation, but operators still needed certificate revocation, key rotation, and session invalidation.
+                The OpenSSL 1.0.1g patch introduced strict bounds validation,
+                but operators still needed certificate revocation, key rotation,
+                and session invalidation.
             </p>
             <pre className="mt-4 rounded-xl border border-[#7563a0]/30 bg-[#f2effb] p-4 font-heading text-[0.8rem] leading-6 text-[#2a2350] overflow-x-auto">
                 <code>{`if (1 + 2 + payload_length + 16 > s->s3->rrec.length)
@@ -138,10 +164,13 @@ export function Stage3AftermathChapter() {
                 Global Fallout
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
-                Heartbleed exposed systemic weaknesses in critical open-source maintenance and incident response readiness across the web.
+                Heartbleed exposed systemic weaknesses in critical open-source
+                maintenance and incident response readiness across the web.
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
-                Even after patches were published, uncertainty remained because victims could not reliably prove whether memory had been exfiltrated.
+                Even after patches were published, uncertainty remained because
+                victims could not reliably prove whether memory had been
+                exfiltrated.
             </p>
             <div className="mt-6">
                 <HeartbleedSimulation stage="aftermath" />
@@ -158,11 +187,15 @@ export function OpenSourceParadoxChapter() {
                     Ecosystem Risk
                 </p>
                 <p className="mt-3 text-[1rem] leading-8 text-[#3a2f4a]">
-                OpenSSL secured a significant share of global encrypted traffic while relying on limited staffing and constrained funding.
-            </p>
+                    OpenSSL secured a significant share of global encrypted
+                    traffic while relying on limited staffing and constrained
+                    funding.
+                </p>
                 <p className="mt-3 text-[1rem] leading-8 text-[#3a2f4a]">
-                The Core Infrastructure Initiative emerged in 2014 to provide sustained financial and engineering support for critical open-source projects.
-            </p>
+                    The Core Infrastructure Initiative emerged in 2014 to
+                    provide sustained financial and engineering support for
+                    critical open-source projects.
+                </p>
             </div>
         </section>
     );
@@ -175,11 +208,26 @@ export function LessonsLearnedChapter() {
                 Practical Security Lessons
             </p>
             <ol className="mt-3 list-decimal pl-6 text-[1rem] leading-8 text-[#1f3650] marker:font-heading marker:text-[#31578a]">
-                <li><strong>Validate every boundary</strong> before reading or copying attacker-controlled lengths.</li>
-                <li><strong>Adopt memory-safe defaults</strong> where practical to reduce over-read classes of bugs.</li>
-                <li><strong>Fund critical dependencies</strong> that underpin production security.</li>
-                <li><strong>Audit continuously</strong> with code review, fuzzing, and incident playbooks.</li>
-                <li><strong>Treat key exposure as full compromise</strong> and rotate secrets accordingly.</li>
+                <li>
+                    <strong>Validate every boundary</strong> before reading or
+                    copying attacker-controlled lengths.
+                </li>
+                <li>
+                    <strong>Adopt memory-safe defaults</strong> where practical
+                    to reduce over-read classes of bugs.
+                </li>
+                <li>
+                    <strong>Fund critical dependencies</strong> that underpin
+                    production security.
+                </li>
+                <li>
+                    <strong>Audit continuously</strong> with code review,
+                    fuzzing, and incident playbooks.
+                </li>
+                <li>
+                    <strong>Treat key exposure as full compromise</strong> and
+                    rotate secrets accordingly.
+                </li>
             </ol>
         </section>
     );
@@ -192,7 +240,9 @@ export function HistoricalTimelineChapter({ events }) {
                 Timeline Synthesis
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2e2750]">
-                The Heartbleed story spans from a single flawed commit to an industry-wide security reckoning and long-term infrastructure reforms.
+                The Heartbleed story spans from a single flawed commit to an
+                industry-wide security reckoning and long-term infrastructure
+                reforms.
             </p>
             <div className="mt-5">
                 <HeartbleedTimeline events={events} />
