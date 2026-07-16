@@ -58,14 +58,20 @@ export default function HeartWireframe({
       } ${pulseClass} ${className}`}
       style={{ transformOrigin: "50% 50%" }}
     >
-      <g fill="none" stroke={color} strokeLinecap="round">
+      <defs>
+        <filter id="heartGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <g fill="none" stroke={color} strokeLinecap="round" filter="url(#heartGlow)">
         {meridians.map((d, i) => (
-          <path key={`m-${i}`} d={d} strokeWidth={0.3} opacity={0.45} />
+          <path key={`m-${i}`} d={d} strokeWidth={0.35} opacity={0.55} />
         ))}
         {parallels.map((d, i) => (
-          <path key={`p-${i}`} d={d} strokeWidth={0.3} opacity={0.45} />
+          <path key={`p-${i}`} d={d} strokeWidth={0.35} opacity={0.55} />
         ))}
-        <path d={outline} strokeWidth={0.7} opacity={1} />
+        <path d={outline} strokeWidth={0.8} opacity={1} />
       </g>
       {children}
     </svg>
