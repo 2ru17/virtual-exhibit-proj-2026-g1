@@ -1,3 +1,109 @@
+# Virtual Exhibit — Incremental Progress Report · Group 1
+
+**Section:** S03 | **Group:** 1 | **Exhibit:** HEARTBLEED (CVE-2014-0160)
+**Deployed site:** [https://2ru17.github.io/virtual-exhibit-proj-2026-g1/](https://2ru17.github.io/virtual-exhibit-proj-2026-g1/)
+
+---
+
+## What We Built Since the Last Submission
+
+Since the initial exhibit proposal, the group progressed from a static mockup concept into a **fully deployed, interactive multi-stage simulation** with a custom visual identity. The major additions are:
+
+- **Three-stage interactive simulation** — Stage 1 (healthy heartbeat demo), Stage 2 (click-to-attack with binary drip and draggable memory-leak popups), Stage 3 (Three.js 3D rotating globe with clickable breach markers).
+- **Custom SVG wireframe heart** — built entirely from parametric math (no external SVG library) using the classic heart curve equations, with meridian and parallel wireframe lines for a 3D look.
+- **Dark cyberpunk theme** — scoped Tailwind v4 design system (`heartbleed-theme.css`) with six exhibit-specific color tokens, seven custom CSS keyframe animations, and custom typography (JetBrains Mono + Space Grotesk).
+- **10 chapter components** — each exhibit section is a self-contained React component with its own styled card layout, keeping the MDX page readable.
+- **Historical timeline** — themed event cards with date, event title, significance badge, and animated hover states.
+- **File structure refactored for museum merge** — all Group 1 files consolidated into `src/S03_Group1_heartbleed/` per the `Task-todo.txt` naming convention.
+
+---
+
+## Aha Moments
+
+### Architecture reveals itself through implementation
+Writing `heartMath.js` was the clearest aha moment of the project. The Heartbleed bug is fundamentally about trusting a declared length over the actual data — and we realized our own heart-rendering code had to do the same kind of bounds reasoning: generate the correct number of sample points, don't over-read, don't under-draw. The geometry became a metaphor for the bug itself.
+
+### Astro's island architecture matches the exhibit's narrative structure
+We initially thought of Astro as "just a static site builder," but the `client:load` island model turned out to perfectly mirror the exhibit's staged reveal. Each chapter section is inert HTML until the user scrolls to it and the simulation activates — the same way the Heartbleed bug was inert in the codebase until a specific code path was triggered.
+
+### Raw Three.js vs. an abstraction layer
+The proposal mentioned React Three Fiber, but we opted for raw Three.js imperatively inside a `useEffect`. The aha moment was realizing that the animation loop, marker projection, and ResizeObserver all need tight control that imperative code gives cleanly — the abstraction would have cost more than it saved here.
+
+### Scope compression is a design skill
+The original proposal described Wireshark hex dumps and realistic packet captures as exhibit content. When we scoped down to the actual implementation, we realized the *feeling* of leaked memory — typewriter text, dripping binary, draggable popup "memory windows" — was far more effective educationally than literal hex data. Simplification made the interaction clearer, not weaker.
+
+---
+
+## Things Learned
+
+| Area | What We Learned |
+|---|---|
+| **Tailwind v4** | `@theme` blocks replace `tailwind.config.js`; the plugin is a Vite plugin, not a PostCSS plugin. Custom color tokens defined in `@theme` are automatically available as utilities (e.g., `text-hb-primary`). |
+| **Astro MDX** | Frontmatter `layout:` wires up the page layout; CSS imported from MDX is scoped to that page's build chunk. Component islands use `client:load` to opt into hydration. |
+| **Parametric math** | The heart curve `x = 16sin³(t), y = 13cos(t) − 5cos(2t) − 2cos(3t) − cos(4t)` and how to derive meridian + parallel lines from it to simulate a 3D wireframe surface. |
+| **Three.js lifecycle** | Proper cleanup in React: cancel animation frame, disconnect ResizeObserver, dispose geometries, materials, and renderer. Missing any of these causes memory leaks with Astro's partial hydration. |
+| **Pointer events for drag** | `pointerdown/pointermove/pointerup` on `window` (not the element) handles fast mouse moves without losing tracking. Touch + mouse parity is automatic. |
+| **Merge hygiene** | Naming conventions like `S03_Group1_heartbleed/` matter enormously when multiple teams push into the same repository. Planning imports around a namespaced folder prevents all merge conflicts at the file level. |
+| **Git identity management** | Managing multiple GitHub accounts via directory-scoped `.gitconfig` overrides is essential when a team has different primary accounts. |
+
+---
+
+## Challenges Faced
+
+### Getting Three.js to play nicely with Astro's SSR
+Three.js references `window` and `document` at import time, which crashes Astro's server-side render. The fix was to make the globe component React-only with `client:load` and keep all Three.js code inside a `useEffect` that only runs in the browser. Finding this took significant debugging.
+
+### Tailwind v4 with no PostCSS
+Almost all Tailwind documentation online targets v3. Tailwind v4 uses a Vite plugin (`@tailwindcss/vite`) and an `@import "tailwindcss"` directive instead of PostCSS directives. Many setup tutorials were wrong for our version and caused silent failures before we identified the issue.
+
+### Keeping the dark theme scoped to our exhibit
+`global.css` is marked DO NOT MODIFY by the instructor and uses a light theme. We needed our dark cyberpunk theme to apply to our exhibit only. The solution was importing `heartbleed-theme.css` exclusively inside `heartbleed.mdx` — Astro's CSS chunking ensures it only loads on that page.
+
+### Popup positioning going off-screen
+Draggable popups in Stage 2 and 3 are spawned at computed cascade positions. On narrower viewports, higher-index popups spawn outside the visible area. We identified this as a known issue but have not yet implemented viewport clamping — the fix involves reading `containerRef.current.getBoundingClientRect()` on spawn and clamping `x` and `y` accordingly.
+
+### Marker overlap on the Three.js globe
+Several markers in Stage 3 share the same latitude (`phi`) value, causing HTML label overlaps. Spread-out positioning is planned for the final submission.
+
+---
+
+## Creative Development Notes
+
+The visual direction evolved from "dark hacker aesthetic" to something more specific: **cyberpunk forensics**. The goal was to make the vulnerability feel simultaneously technical and emotional — like reading a post-mortem report under neon lighting. Key creative decisions:
+
+- **Hot pink (`#ff279e`) as the primary accent** — chosen because Heartbleed's own official logo uses red/pink, and the color reads as "alarm" without being literal red.
+- **Heart as the central metaphor** — both literally (TLS heartbeat extension) and emotionally (something vital bleeding out). The wireframe treatment keeps it technical rather than sentimental.
+- **Draggable popup windows as "leaked memory"** — the interaction of clicking the heart and watching popup windows cascade onto the screen was inspired by the actual experience of running a Heartbleed PoC tool, where memory dumps appear in rapid succession.
+- **Globe in Stage 3** — rather than a flat map, a rotating 3D wireframe globe makes the "global scale" of the aftermath feel physical and visceral.
+- **JetBrains Mono for headings** — monospace fonts ground the neon visuals in raw system architecture, reinforcing that this is a low-level memory bug, not a social engineering attack.
+
+---
+
+## Things To Do for Final Submission
+
+### High Priority
+- [ ] **Mobile fallback for Three.js globe** — Stage 3 currently renders full Three.js on all viewports. Per the original proposal, mobile devices should fall back to a flat SVG world map. Implement a `useMediaQuery` check and a simplified SVG version.
+- [ ] **Viewport clamping for popup spawning** — popups in Stage 2 and Stage 3 can spawn off-screen. Clamp spawn coordinates to the container's bounding box.
+- [ ] **Globe marker position spread** — adjust `phi` values for `imgur`, `lastpass`, `yahoo` markers so labels don't overlap at the same latitude.
+
+### Content
+- [ ] **Expand hex dump content in Stage 2** — show more realistic leaked data snippets (e.g., session cookie fragments, partial private key lines) in the typewriter text and popup cards.
+- [ ] **Add a "You are patched" ending** — after exploring Stage 3, give the user a clear resolution: OpenSSL 1.0.1g, cert revocation checklist, and a summary of what changed.
+- [ ] **Confirm exhibit page naming** — verify with the instructor whether `heartbleed.mdx` (→ `/heartbleed` route) needs a `S03_Group1_` prefix on the filename.
+
+### Code Quality
+- [ ] **Consolidate duplicate `@keyframes`** — `heart-pop` is defined in both JSX `<style>` blocks and the CSS file. Move all keyframes to `heartbleed-theme.css`.
+- [ ] **Migrate `Astro.glob()` → `import.meta.glob()`** in `HomepageLayout.astro` (template file — coordinate with instructor).
+- [ ] **Remove dead `sampleDomeBoundary` export** from `heartMath.js`.
+- [ ] **Rebase `feat(heartbleed-ui)-v2` onto `origin/main`** — resolve CSS conflicts from the merged style PR before final submission.
+
+### Polish
+- [ ] Verify all interactions on mobile (touch targets, Stage 2 popups, Stage 3 markers).
+- [ ] Add scroll-triggered reveal animations to chapter cards as the user reads down the page.
+- [ ] Update AI/LLM disclosure in the README to reflect the use of an AI coding agent for code review, file restructuring, and documentation assistance.
+
+---
+
 # Virtual Exhibit Case Proposal - Group 1
 
 ## Mid-Milestone Submission

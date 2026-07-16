@@ -3,7 +3,7 @@ import HeartbleedTimeline from "./HeartbleedTimeline.jsx";
 
 export function Stage1HealthyServerChapter() {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(160deg,rgba(255,39,158,0.10),rgba(118,198,215,0.06))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(160deg,rgba(255,39,158,0.10),rgba(118,198,215,0.06))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#6a2b61]">
                 Stage 1 Context
             </p>
@@ -26,7 +26,7 @@ export function Stage1HealthyServerChapter() {
 
 export function AnatomyHeartbeatChapter() {
     return (
-        <section className="mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.14),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.14),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl bg-white/40 p-4 sm:p-5">
                 <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#20566f]">
                     Packet Anatomy
@@ -63,7 +63,7 @@ export function AnatomyHeartbeatChapter() {
 
 export function VulnerableCodePathChapter() {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(155deg,rgba(189,147,249,0.15),rgba(255,39,158,0.06))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(155deg,rgba(189,147,249,0.15),rgba(255,39,158,0.06))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#4f3978]">
                 Vulnerable Implementation
             </p>
@@ -91,7 +91,7 @@ int dtls1_process_heartbeat(SSL *s) {
 
 export function Stage2UnderAttackChapter() {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-coral/45 bg-[linear-gradient(160deg,rgba(226,169,241,0.20),rgba(255,49,49,0.07))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-coral/45 bg-[linear-gradient(160deg,rgba(226,169,241,0.20),rgba(255,49,49,0.07))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#743964]">
                 Attack Simulation
             </p>
@@ -113,7 +113,7 @@ export function Stage2UnderAttackChapter() {
 
 export function AttackerCouldSeeChapter() {
     return (
-        <section className="mt-4 rounded-2xl border border-hb-cyan/30 bg-[linear-gradient(150deg,rgba(118,198,215,0.14),rgba(226,169,241,0.08))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/30 bg-[linear-gradient(150deg,rgba(118,198,215,0.14),rgba(226,169,241,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl border border-[#7dbecf]/30 bg-white/50 p-5">
                 <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#275d73]">
                     Likely Memory Exposure
@@ -136,7 +136,7 @@ export function AttackerCouldSeeChapter() {
 
 export function RaceToDisclosureChapter() {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(160deg,rgba(189,147,249,0.16),rgba(118,198,215,0.07))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(160deg,rgba(189,147,249,0.16),rgba(118,198,215,0.07))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#4a3e77]">
                 Coordinated Disclosure
             </p>
@@ -159,7 +159,7 @@ export function RaceToDisclosureChapter() {
 
 export function Stage3AftermathChapter() {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(165deg,rgba(255,39,158,0.10),rgba(118,198,215,0.08))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(165deg,rgba(255,39,158,0.10),rgba(118,198,215,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#6a2b61]">
                 Global Fallout
             </p>
@@ -181,7 +181,7 @@ export function Stage3AftermathChapter() {
 
 export function OpenSourceParadoxChapter() {
     return (
-        <section className="mt-4 rounded-2xl border border-hb-coral/40 bg-[linear-gradient(155deg,rgba(226,169,241,0.22),rgba(189,147,249,0.08))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-coral/40 bg-[linear-gradient(155deg,rgba(226,169,241,0.22),rgba(189,147,249,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl border border-hb-coral/45 bg-white/45 p-5 sm:p-6">
                 <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#7a3f72]">
                     Ecosystem Risk
@@ -203,7 +203,7 @@ export function OpenSourceParadoxChapter() {
 
 export function LessonsLearnedChapter() {
     return (
-        <section className="mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.15),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.15),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#20566f]">
                 Practical Security Lessons
             </p>
@@ -235,7 +235,7 @@ export function LessonsLearnedChapter() {
 
 export function HistoricalTimelineChapter({ events }) {
     return (
-        <section className="mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(165deg,rgba(189,147,249,0.16),rgba(255,39,158,0.08))] px-6 py-6 sm:px-8 sm:py-8">
+        <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(165deg,rgba(189,147,249,0.16),rgba(255,39,158,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#54417d]">
                 Timeline Synthesis
             </p>

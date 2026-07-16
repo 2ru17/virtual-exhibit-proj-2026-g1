@@ -9,9 +9,9 @@
  */
 
 import { useMemo, useRef, useState } from "react";
-import HeartWireframe from "./heartbleed/HeartWireframe";
-import WireframeGlobe from "./heartbleed/WireframeGlobe";
-import DraggablePopup from "./heartbleed/PopupBoxes";
+import HeartWireframe from "./HeartWireframe";
+import WireframeGlobe from "./WireframeGlobe";
+import DraggablePopup from "./PopupBoxes";
 
 function DigitBurst({ triggerKey }) {
   const digits = useMemo(() => {
