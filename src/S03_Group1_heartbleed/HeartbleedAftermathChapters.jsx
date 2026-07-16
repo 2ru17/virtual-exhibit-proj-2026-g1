@@ -67,7 +67,7 @@ export function VulnerableCodePathChapter() {
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-secondary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-secondary">
                 <span aria-hidden="true">◆</span> Vulnerable Implementation
             </p>
-            <pre className="mt-4 rounded-xl border border-[#7563a0]/30 bg-[#f2effb] p-4 font-heading text-[0.8rem] leading-6 text-[#2a2350] overflow-x-auto">
+            <pre className="relative mt-4 rounded-xl border border-hb-secondary/30 bg-[#130b2d] p-5 font-heading text-[0.85rem] leading-7 text-white whitespace-pre-wrap break-words shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_18px_rgba(118,198,215,0.08)]">
                 <code>{`/* Vulnerable Code - OpenSSL 1.0.1 (2011-2014) */
 int dtls1_process_heartbeat(SSL *s) {
     unsigned char *p = &s->s3->rrec.data[0];
@@ -100,7 +100,7 @@ export function Stage2UnderAttackChapter() {
                 only a few bytes. The vulnerable server trusts the claim and
                 returns a large memory slice.
             </p>
-            <pre className="mt-4 rounded-xl border border-[#9d638d]/30 bg-[#fdf0f8] p-4 font-heading text-[0.8rem] leading-6 text-[#402845] overflow-x-auto">
+            <pre className="relative mt-4 rounded-xl border border-hb-coral/30 bg-[#130b2d] p-5 font-heading text-[0.85rem] leading-7 text-white whitespace-pre-wrap break-words shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_18px_rgba(226,169,241,0.08)]">
                 <code>{`[Attacker] -- heartbeat(length=65536, payload="Hi") --> [Server]
 [Server] -- returns 64KB memory including unrelated data --> [Attacker]`}</code>
             </pre>
@@ -149,7 +149,7 @@ export function RaceToDisclosureChapter() {
                 but operators still needed certificate revocation, key rotation,
                 and session invalidation.
             </p>
-            <pre className="mt-4 rounded-xl border border-[#7563a0]/30 bg-[#f2effb] p-4 font-heading text-[0.8rem] leading-6 text-[#2a2350] overflow-x-auto">
+            <pre className="relative mt-4 rounded-xl border border-hb-secondary/30 bg-[#130b2d] p-5 font-heading text-[0.85rem] leading-7 text-white whitespace-pre-wrap break-words shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_18px_rgba(189,147,249,0.08)]">
                 <code>{`if (1 + 2 + payload_length + 16 > s->s3->rrec.length)
     return 0;  /* Reject invalid heartbeat */`}</code>
             </pre>

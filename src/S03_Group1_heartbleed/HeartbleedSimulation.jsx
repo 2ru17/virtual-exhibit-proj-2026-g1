@@ -146,7 +146,7 @@ function StageHealthy() {
       <div className="mt-6 flex flex-col items-center justify-center gap-3 font-heading text-xs sm:flex-row sm:gap-6 sm:text-sm">
         <div className="text-center">
           <div className="text-hb-cyan">CLIENT →</div>
-          <div className="text-white/90">heartbeat(payload=3, &quot;HEY&quot;)</div>
+          <div className="whitespace-nowrap text-white/90">heartbeat(payload=3, &quot;HEY&quot;)</div>
         </div>
 
         <div className="text-hb-secondary" aria-hidden="true">
@@ -156,7 +156,7 @@ function StageHealthy() {
         <div className="min-h-[2.5rem] text-center">
           <div className="text-hb-secondary">SERVER →</div>
           {sent ? (
-            <div key={pulseKey} className="animate-reveal text-white/90">
+            <div key={pulseKey} className="animate-reveal whitespace-nowrap text-white/90">
               &quot;HEY&quot; ✓ (3 bytes)
             </div>
           ) : (
@@ -297,12 +297,12 @@ function StageAttack() {
           </HeartWireframe>
         </div>
 
-        <div className="relative mx-auto mt-2 h-24 w-40">
+        <div className="relative mx-auto mt-2 h-32 w-48">
           <LeakDrip key={`drip-${clickCount}`} active={leaking} />
           {leaking && (
             <div
               key={`leaks-${clickCount}`}
-              className="flex flex-col items-center gap-1 pt-6 font-heading text-xs text-hb-red"
+              className="flex flex-col items-center gap-1 pt-12 font-heading text-xs text-hb-red"
             >
               {leaks.map((leak) => (
                 <TypewriterText key={leak.label} text={leak.label} delay={leak.delay} />
@@ -368,16 +368,16 @@ function StageAftermath() {
       },
       codenomicon: {
         label: "Codenomicon",
-        theta: -1.15,
-        phi: (Math.PI / 2) * 0.82,
+        theta: -1.75,
+        phi: (Math.PI / 2) * 0.78,
         title: "Who found it",
         accent: "primary",
         text: "Independently discovered by a Codenomicon security team and Neel Mehta of Google Security, both reporting it around the same time in early April 2014.",
       },
       openssl: {
         label: "OpenSSL",
-        theta: -0.1,
-        phi: (Math.PI / 2) * 0.82,
+        theta: 0.45,
+        phi: (Math.PI / 2) * 0.79,
         title: "The fix",
         accent: "secondary",
         text: "OpenSSL 1.0.1g, released April 7 2014, patched the bug. Versions 1.0.1 through 1.0.1f were vulnerable; 1.0.0 and 0.9.8 branches never were.",
@@ -510,13 +510,6 @@ function StageAftermath() {
         }
         .heart-pop {
           animation: heart-pop 0.45s ease-out;
-        }
-        @keyframes reveal {
-          0% { opacity: 0; transform: translate(-50%, 10px); }
-          100% { opacity: 1; transform: translate(-50%, 0); }
-        }
-        .animate-reveal {
-          animation: reveal 0.3s ease-out forwards;
         }
       `}</style>
     </div>
