@@ -222,7 +222,7 @@
     box-shadow: none;
 }
 
-/* ─── Chapter Label Storytelling ─────────────────────────────────── */
+/* Chapter Label Storytelling */
 
 @keyframes labelGlitch {
     0%, 96%, 100% { transform: translate(0); text-shadow: none; box-shadow: 0 0 0 transparent; }
@@ -259,7 +259,6 @@
     color: #94a3b8 !important;
 }
 
-/* ────────────────────────────────────────────────────────────────── */
 
 .article h3 {
     color: var(--color-hb-secondary) !important;
@@ -274,7 +273,7 @@
     gap: 0.75rem;
 }
 
-/* ─── H2 Heading Storytelling ────────────────────────────────────── */
+/* H2 Heading Storytelling */
 
 /* H2 1: Stage 1 (Healthy) - RGB Shining */
 @keyframes rgbShine {
@@ -505,7 +504,7 @@
     border-radius: 1rem;
 }
 
-/* ─── Chapter card scroll-reveal ─────────────────────────────── */
+/* Chapter card scroll-reveal */
 .hb-card-reveal {
     opacity: 0;
     animation: none;
