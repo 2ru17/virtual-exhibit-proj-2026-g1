@@ -4,8 +4,8 @@ import HeartbleedTimeline from "./HeartbleedTimeline.jsx";
 export function Stage1HealthyServerChapter() {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(160deg,rgba(255,39,158,0.10),rgba(118,198,215,0.06))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#6a2b61]">
-                Stage 1 Context
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-primary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-primary">
+                <span aria-hidden="true">◆</span> Stage 1 Context
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
                 The TLS heartbeat extension was designed as a lightweight
@@ -28,8 +28,8 @@ export function AnatomyHeartbeatChapter() {
     return (
         <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.14),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl bg-white/40 p-4 sm:p-5">
-                <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#20566f]">
-                    Packet Anatomy
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-hb-cyan/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-cyan">
+                    <span aria-hidden="true">◆</span> Packet Anatomy
                 </p>
                 <p className="mt-3 text-[1rem] leading-8 text-[#1f3552]">
                     A standard heartbeat request contains:
@@ -64,8 +64,8 @@ export function AnatomyHeartbeatChapter() {
 export function VulnerableCodePathChapter() {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(155deg,rgba(189,147,249,0.15),rgba(255,39,158,0.06))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#4f3978]">
-                Vulnerable Implementation
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-secondary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-secondary">
+                <span aria-hidden="true">◆</span> Vulnerable Implementation
             </p>
             <pre className="mt-4 rounded-xl border border-[#7563a0]/30 bg-[#f2effb] p-4 font-heading text-[0.8rem] leading-6 text-[#2a2350] overflow-x-auto">
                 <code>{`/* Vulnerable Code - OpenSSL 1.0.1 (2011-2014) */
@@ -92,8 +92,8 @@ int dtls1_process_heartbeat(SSL *s) {
 export function Stage2UnderAttackChapter() {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-coral/45 bg-[linear-gradient(160deg,rgba(226,169,241,0.20),rgba(255,49,49,0.07))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#743964]">
-                Attack Simulation
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-coral/20 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-coral">
+                <span aria-hidden="true">◆</span> Attack Simulation
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#3b2b49]">
                 Attackers claim a maximum-size heartbeat payload while sending
@@ -115,8 +115,8 @@ export function AttackerCouldSeeChapter() {
     return (
         <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/30 bg-[linear-gradient(150deg,rgba(118,198,215,0.14),rgba(226,169,241,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl border border-[#7dbecf]/30 bg-white/50 p-5">
-                <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#275d73]">
-                    Likely Memory Exposure
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-hb-cyan/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-cyan">
+                    <span aria-hidden="true">◆</span> Likely Memory Exposure
                 </p>
                 <ul className="mt-3 list-disc pl-6 text-[1rem] leading-8 text-[#1f3650] marker:text-[#1d6f84]">
                     <li>Private TLS keys</li>
@@ -137,8 +137,8 @@ export function AttackerCouldSeeChapter() {
 export function RaceToDisclosureChapter() {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(160deg,rgba(189,147,249,0.16),rgba(118,198,215,0.07))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#4a3e77]">
-                Coordinated Disclosure
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-secondary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-secondary">
+                <span aria-hidden="true">◆</span> Coordinated Disclosure
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2e2550]">
                 Researchers at Codenomicon and Google independently identified
@@ -160,8 +160,8 @@ export function RaceToDisclosureChapter() {
 export function Stage3AftermathChapter() {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-primary/35 bg-[linear-gradient(165deg,rgba(255,39,158,0.10),rgba(118,198,215,0.08))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#6a2b61]">
-                Global Fallout
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-primary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-primary">
+                <span aria-hidden="true">◆</span> Global Fallout
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2c2249]">
                 Heartbleed exposed systemic weaknesses in critical open-source
@@ -183,8 +183,8 @@ export function OpenSourceParadoxChapter() {
     return (
         <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-coral/40 bg-[linear-gradient(155deg,rgba(226,169,241,0.22),rgba(189,147,249,0.08))] px-6 py-6 sm:px-8 sm:py-8">
             <div className="rounded-xl border border-hb-coral/45 bg-white/45 p-5 sm:p-6">
-                <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#7a3f72]">
-                    Ecosystem Risk
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-hb-coral/20 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-coral">
+                    <span aria-hidden="true">◆</span> Ecosystem Risk
                 </p>
                 <p className="mt-3 text-[1rem] leading-8 text-[#3a2f4a]">
                     OpenSSL secured a significant share of global encrypted
@@ -204,8 +204,8 @@ export function OpenSourceParadoxChapter() {
 export function LessonsLearnedChapter() {
     return (
         <section className="hb-card-reveal mt-4 rounded-2xl border border-hb-cyan/35 bg-[linear-gradient(160deg,rgba(118,198,215,0.15),rgba(189,147,249,0.06))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#20566f]">
-                Practical Security Lessons
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-cyan/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-cyan">
+                <span aria-hidden="true">◆</span> Practical Security Lessons
             </p>
             <ol className="mt-3 list-decimal pl-6 text-[1rem] leading-8 text-[#1f3650] marker:font-heading marker:text-[#31578a]">
                 <li>
@@ -236,8 +236,8 @@ export function LessonsLearnedChapter() {
 export function HistoricalTimelineChapter({ events }) {
     return (
         <section className="hb-card-reveal mt-5 rounded-2xl border border-hb-secondary/35 bg-[linear-gradient(165deg,rgba(189,147,249,0.16),rgba(255,39,158,0.08))] px-6 py-6 sm:px-8 sm:py-8">
-            <p className="font-heading text-xs uppercase tracking-[0.18em] text-[#54417d]">
-                Timeline Synthesis
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-hb-secondary/15 px-3 py-1 font-heading text-[0.72rem] font-bold uppercase tracking-[0.2em] text-hb-secondary">
+                <span aria-hidden="true">◆</span> Timeline Synthesis
             </p>
             <p className="mt-3 text-[1rem] leading-8 text-[#2e2750]">
                 The Heartbleed story spans from a single flawed commit to an
