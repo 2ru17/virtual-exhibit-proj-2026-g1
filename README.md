@@ -32,6 +32,12 @@ The proposal mentioned React Three Fiber, but we opted for raw Three.js imperati
 ### Scope compression is a design skill
 The original proposal described Wireshark hex dumps and realistic packet captures as exhibit content. When we scoped down to the actual implementation, we realized the *feeling* of leaked memory — typewriter text, dripping binary, draggable popup "memory windows" — was far more effective educationally than literal hex data. Simplification made the interaction clearer, not weaker.
 
+### Working around immutable layout files
+We were constrained by a rule not to modify the global `ExhibitLayout.astro` file, which was originally squishing our content into a narrow center column. The aha moment was realizing we could use our isolated `heartbleed-theme.css` to globally override `.content__block` and `.padder` using `!important` specifically for our exhibit, effectively hacking the museum's walls to give our exhibit more floor space without breaking the rules.
+
+### React State as a Narrative Tool
+Initially, we viewed React simply as a way to render the UI components. However, mapping the stages of the Heartbleed vulnerability (Healthy, Under Attack, Aftermath) directly to React state variables allowed us to build the narrative as an interactive state machine. The realization was that component state doesn't just manage data—it drives the educational pacing of the exhibit.
+
 ---
 
 ## Things Learned
@@ -44,7 +50,8 @@ The original proposal described Wireshark hex dumps and realistic packet capture
 | **Three.js lifecycle** | Proper cleanup in React: cancel animation frame, disconnect ResizeObserver, dispose geometries, materials, and renderer. Missing any of these causes memory leaks with Astro's partial hydration. |
 | **Pointer events for drag** | `pointerdown/pointermove/pointerup` on `window` (not the element) handles fast mouse moves without losing tracking. Touch + mouse parity is automatic. |
 | **Merge hygiene** | Naming conventions like `S03_Group1_heartbleed/` matter enormously when multiple teams push into the same repository. Planning imports around a namespaced folder prevents all merge conflicts at the file level. |
-| **Git identity management** | Managing multiple GitHub accounts via directory-scoped `.gitconfig` overrides is essential when a team has different primary accounts. |
+| **CSS Scoping vs Plain CSS** | Astro's `:global()` pseudo-class only works inside Astro `<style>` blocks. Using it inside a standard `.css` file causes the browser to silently drop the entire CSS rule as invalid. |
+| **Animation Performance** | Triggering reflows via CSS `width` or `margin` in animations causes layout thrashing. Moving to `transform: translate()` and `opacity` for our scroll-reveal animations kept the framerate locked at 60fps. |
 
 ---
 
@@ -63,7 +70,13 @@ Almost all Tailwind documentation online targets v3. Tailwind v4 uses a Vite plu
 Draggable popups in Stage 2 and 3 are spawned at computed cascade positions. On narrower viewports, higher-index popups spawn outside the visible area. We identified this as a known issue but have not yet implemented viewport clamping — the fix involves reading `containerRef.current.getBoundingClientRect()` on spawn and clamping `x` and `y` accordingly.
 
 ### Marker overlap on the Three.js globe
-Several markers in Stage 3 share the same latitude (`phi`) value, causing HTML label overlaps. Spread-out positioning is planned for the final submission.
+Several markers in Stage 3 shared the same latitude (`theta` and `phi`) values, causing HTML labels like "Codenomicon" and "Imgur" to stack directly on top of each other. We resolved this by manually tweaking the spherical coordinates for each marker so they spread out visually across the globe's curvature.
+
+### Managing overlapping absolute animations
+In Stage 2, our dripping binary animation was falling directly onto our typewriter text. Because both were absolutely positioned inside a relative flex box, traditional margin pushing didn't work. We had to explicitly manage the container's height and the vertical padding of the text block to give the binary a proper "fall distance" before hitting the text.
+
+### Code Block Wrapping
+Handling the long strings of mocked server code and payload data proved frustrating because CSS `break-all` was chopping words in half. We had to carefully balance `whitespace-pre-wrap` with `break-words` and adequate padding to ensure the code snippets looked clean and readable without triggering horizontal scrolling.
 
 ---
 
@@ -76,6 +89,9 @@ The visual direction evolved from "dark hacker aesthetic" to something more spec
 - **Draggable popup windows as "leaked memory"** — the interaction of clicking the heart and watching popup windows cascade onto the screen was inspired by the actual experience of running a Heartbleed PoC tool, where memory dumps appear in rapid succession.
 - **Globe in Stage 3** — rather than a flat map, a rotating 3D wireframe globe makes the "global scale" of the aftermath feel physical and visceral.
 - **JetBrains Mono for headings** — monospace fonts ground the neon visuals in raw system architecture, reinforcing that this is a low-level memory bug, not a social engineering attack.
+- **SVG Glow Filters** — rather than relying strictly on CSS `box-shadow`, we baked an SVG `<filter>` directly into the `HeartWireframe` component so the neon glow renders perfectly tight to the generated math curve, making the heartbeat look radioactive.
+- **Color Theory as Navigation** — we strictly reserved specific colors for specific actors in the narrative: Cyan (`#76c6d7`) represents the Client/Attacker, while Pink/Coral (`#ff279e`) represents the Server/Vulnerability. This creates an intuitive visual shorthand across all chapters.
+- **Micro-interactions** — the subtle hover states on the chapter cards (a glowing pink border pulse) and the timeline markers encourage users to engage with the text rather than just passively scrolling.
 
 ---
 
@@ -84,7 +100,7 @@ The visual direction evolved from "dark hacker aesthetic" to something more spec
 ### High Priority
 - [ ] **Mobile fallback for Three.js globe** — Stage 3 currently renders full Three.js on all viewports. Per the original proposal, mobile devices should fall back to a flat SVG world map. Implement a `useMediaQuery` check and a simplified SVG version.
 - [ ] **Viewport clamping for popup spawning** — popups in Stage 2 and Stage 3 can spawn off-screen. Clamp spawn coordinates to the container's bounding box.
-- [ ] **Globe marker position spread** — adjust `phi` values for `imgur`, `lastpass`, `yahoo` markers so labels don't overlap at the same latitude.
+- [x] **Globe marker position spread** — adjust `theta`/`phi` values for `imgur`, `lastpass`, `openssl` markers so labels don't overlap. (Completed)
 
 ### Content
 - [ ] **Expand hex dump content in Stage 2** — show more realistic leaked data snippets (e.g., session cookie fragments, partial private key lines) in the typewriter text and popup cards.
