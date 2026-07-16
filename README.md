@@ -38,6 +38,12 @@ We were constrained by a rule not to modify the global `ExhibitLayout.astro` fil
 ### React State as a Narrative Tool
 Initially, we viewed React simply as a way to render the UI components. However, mapping the stages of the Heartbleed vulnerability (Healthy, Under Attack, Aftermath) directly to React state variables allowed us to build the narrative as an interactive state machine. The realization was that component state doesn't just manage data-it drives the educational pacing of the exhibit.
 
+### Resolving conflicts through Git strategy
+When we refactored the file structure to move everything into the `S03_Group1_heartbleed` folder, it created significant merge conflicts. The aha moment was realizing that by using the command line to selectively accept `HEAD` changes for the MDX file and issuing `git rm` for the old deleted component paths, we could cleanly resolve structural conflicts without losing any content or layout progress.
+
+### Styling raw Markdown through CSS pseudo-classes
+We wanted to give each chapter heading its own unique story-driven animation (e.g., glitching, alarms). Since we couldn't edit the raw HTML tags inside the MDX file without breaking the global layout's Table of Contents, our aha moment was using CSS `:nth-of-type()` selectors to target specific `<h2>` elements sequentially down the page.
+
 ---
 
 ## Things Learned
@@ -52,6 +58,8 @@ Initially, we viewed React simply as a way to render the UI components. However,
 | **Merge hygiene** | Naming conventions like `S03_Group1_heartbleed/` matter enormously when multiple teams push into the same repository. Planning imports around a namespaced folder prevents all merge conflicts at the file level. |
 | **CSS Scoping vs Plain CSS** | Astro's `:global()` pseudo-class only works inside Astro `<style>` blocks. Using it inside a standard `.css` file causes the browser to silently drop the entire CSS rule as invalid. |
 | **Animation Performance** | Triggering reflows via CSS `width` or `margin` in animations causes layout thrashing. Moving to `transform: translate()` and `opacity` for our scroll-reveal animations kept the framerate locked at 60fps. |
+| **Git Merge Conflict Resolution** | How to handle structural merge conflicts (modify/delete conflicts) when files are moved to namespaced folders, using `git rm` and selectively accepting HEAD changes. |
+| **CSS Pseudo-classes for Narrative** | Using `:nth-of-type()` in a scoped stylesheet to apply unique storytelling animations (pulse, glitch, strobe) to sequential Markdown headings without modifying the underlying HTML. |
 
 ---
 
@@ -77,6 +85,9 @@ In Stage 2, our dripping binary animation was falling directly onto our typewrit
 
 ### Code Block Wrapping
 Handling the long strings of mocked server code and payload data proved frustrating because CSS `break-all` was chopping words in half. We had to carefully balance `whitespace-pre-wrap` with `break-words` and adequate padding to ensure the code snippets looked clean and readable without triggering horizontal scrolling.
+
+### Managing structural merge conflicts
+Because we moved all of our components and styles from the global `src/components/` directory into a namespaced `src/S03_Group1_heartbleed/` folder, attempting to merge the branches resulted in multiple "modify/delete" conflicts. Resolving this required careful command-line Git intervention to ensure the old files were fully removed while preserving the updated component imports in the MDX file.
 
 ---
 
@@ -112,7 +123,7 @@ The visual direction evolved from "dark hacker aesthetic" to something more spec
 - [ ] **Consolidate duplicate `@keyframes`** - `heart-pop` is defined in both JSX `<style>` blocks and the CSS file. Move all keyframes to `heartbleed-theme.css`.
 - [ ] **Migrate `Astro.glob()` → `import.meta.glob()`** in `HomepageLayout.astro` (template file - coordinate with instructor).
 - [ ] **Remove dead `sampleDomeBoundary` export** from `heartMath.js`.
-- [ ] **Rebase `feat(heartbleed-ui)-v2` onto `origin/main`** - resolve CSS conflicts from the merged style PR before final submission.
+- [x] **Merge feature branch into main** - The `feat(heartbleed-ui)-v2` branch is already merged to main, successfully resolving the structural file path conflicts.
 
 ### Polish
 - [ ] Verify all interactions on mobile (touch targets, Stage 2 popups, Stage 3 markers).
