@@ -219,7 +219,47 @@
     );
     /* line doesn't inherit -webkit-text-fill-color */
     -webkit-text-fill-color: initial;
+    box-shadow: none;
 }
+
+/* ─── Chapter Label Storytelling ─────────────────────────────────── */
+
+@keyframes labelGlitch {
+    0%, 96%, 100% { transform: translate(0); text-shadow: none; box-shadow: 0 0 0 transparent; }
+    97% { transform: translate(-1px, 1px); text-shadow: 2px 0 var(--color-hb-secondary), -2px 0 var(--color-hb-cyan); box-shadow: inset 2px 0 var(--color-hb-secondary); }
+    98.5% { transform: translate(1px, -1px); text-shadow: -2px 0 var(--color-hb-secondary), 2px 0 var(--color-hb-cyan); box-shadow: inset -2px 0 var(--color-hb-cyan); }
+}
+
+.label-story-glitch {
+    animation: labelGlitch 3.5s infinite;
+    position: relative;
+    border: 1px dashed var(--color-hb-secondary);
+    border-radius: 8px !important;
+}
+
+@keyframes labelAlarm {
+    0%, 100% { background-color: rgba(255, 49, 49, 0.1); border-color: rgba(255, 49, 49, 0.3); color: var(--color-hb-coral); box-shadow: 0 0 5px rgba(255, 49, 49, 0); }
+    50% { background-color: rgba(255, 49, 49, 0.4); border-color: var(--color-hb-coral); color: #fff; box-shadow: 0 0 15px var(--color-hb-coral), inset 0 0 10px var(--color-hb-coral); }
+}
+
+.label-story-alarm {
+    animation: labelAlarm 1.2s infinite ease-in-out;
+    border: 1px solid transparent;
+}
+
+.label-story-archival {
+    background-color: #1e293b !important; /* stark slate */
+    color: #e2e8f0 !important;
+    border: 1px solid #475569 !important;
+    border-radius: 2px !important; /* rigid, non-pill */
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+.label-story-archival span {
+    color: #94a3b8 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────── */
 
 .article h3 {
     color: var(--color-hb-secondary) !important;
@@ -232,6 +272,58 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+/* ─── H2 Heading Storytelling ────────────────────────────────────── */
+
+/* H2 1: Stage 1 (Healthy) - RGB Shining */
+@keyframes rgbShine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.article h2:nth-of-type(1) {
+    background: linear-gradient(90deg, #ff2a2a, #ff7a2a, #e6d800, #2aff2a, #2a2aff, #c22aff, #ff2a2a);
+    background-size: 200% auto;
+    color: transparent !important;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: rgbShine 4s linear infinite;
+    text-shadow: none !important;
+}
+
+/* H2 2 & 4: Vulnerable Code / Race to Disclosure (Glitch) */
+@keyframes textGlitch {
+    0%, 96%, 100% { transform: translate(0); text-shadow: none; }
+    97% { transform: translate(-2px, 2px); text-shadow: 3px 0 var(--color-hb-secondary), -3px 0 var(--color-hb-cyan); }
+    98.5% { transform: translate(2px, -2px); text-shadow: -3px 0 var(--color-hb-secondary), 3px 0 var(--color-hb-cyan); }
+}
+.article h2:nth-of-type(2),
+.article h2:nth-of-type(4) {
+    animation: textGlitch 3.5s infinite;
+}
+
+/* H2 3: Under Attack (Alarm Strobe) */
+@keyframes textAlarm {
+    0%, 100% { color: #8b0000; text-shadow: none; }
+    50% { color: var(--color-hb-coral); text-shadow: 0 0 8px rgba(255, 49, 49, 0.6); }
+}
+.article h2:nth-of-type(3) {
+    animation: textAlarm 1.2s infinite ease-in-out;
+}
+
+/* H2 5 & 6: Aftermath & Timeline (Archival Forensic Doc) */
+.article h2:nth-of-type(5),
+.article h2:nth-of-type(6) {
+    background-color: #130b2d !important;
+    color: #e2e8f0 !important;
+    border-left: 6px solid var(--color-hb-secondary) !important;
+    border-bottom: none !important;
+    padding: 0.75rem 1.2rem !important;
+    font-family: var(--font-heading) !important;
+    letter-spacing: 0.05em !important;
+    text-shadow: none !important;
+    border-radius: 4px;
 }
 
 .article > :global(h3::after) {
