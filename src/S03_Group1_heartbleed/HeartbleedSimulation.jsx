@@ -13,6 +13,50 @@ import HeartWireframe from "./HeartWireframe";
 import WireframeGlobe from "./WireframeGlobe";
 import DraggablePopup from "./PopupBoxes";
 
+// (w-56 = 224px wide).
+const POPUP_W = 224;
+const POPUP_H = 90;
+const MIN_GAP = 50; // minimum px gap enforced between popup top-left corners
+
+// randomize popup positions based on coordinates
+function findNonOverlappingPosition(containerW, containerH, existingPopups, maxAttempts = 30) {
+  const margin = 16;
+  const maxX = Math.max(containerW - POPUP_W - margin, margin);
+  const maxY = Math.max(containerH - POPUP_H - margin, margin);
+
+  let bestCandidate = { x: margin, y: margin };
+  let bestMinDist = -Infinity;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const x = margin + Math.random() * (maxX - margin);
+    const y = margin + Math.random() * (maxY - margin);
+
+    if (existingPopups.length === 0) {
+      return { x, y };
+    }
+
+    let minDist = Infinity;
+    for (const p of existingPopups) {
+      const dx = x - p.x;
+      const dy = y - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < minDist) minDist = dist;
+    }
+
+    if (minDist >= MIN_GAP) {
+      return { x, y };
+    }
+
+    if (minDist > bestMinDist) {
+      bestMinDist = minDist;
+      bestCandidate = { x, y };
+    }
+  }
+
+  // No fully-clear spot found within maxAttempts; use the least-overlapping one.
+  return bestCandidate;
+}
+
 function DigitBurst({ triggerKey }) {
   const digits = useMemo(() => {
     const count = 10;
@@ -172,6 +216,7 @@ function StageAttack() {
   const [clickCount, setClickCount] = useState(0);
   const [popups, setPopups] = useState([]);
   const nextZ = useRef(1);
+  const containerRef = useRef(null);
 
   const boxPool = [
     {
@@ -232,14 +277,10 @@ function StageAttack() {
     const template = boxPool[Math.floor(Math.random() * boxPool.length)];
     const id = Date.now() + Math.random();
 
-    const step = 32;
-    const cols = 4;
-    const index = popups.length;
-    const cascadeX = index % cols;
-    const cascadeY = Math.floor(index / cols) % cols;
-
-    const x = 30 + cascadeX * step * 2.4;
-    const y = 20 + cascadeY * step;
+    const el = containerRef.current;
+    const containerW = el ? el.clientWidth : 400;
+    const containerH = el ? el.clientHeight : 400;
+    const { x, y } = findNonOverlappingPosition(containerW, containerH, popups);
 
     nextZ.current += 1;
 
@@ -271,6 +312,7 @@ function StageAttack() {
 
   return (
     <div
+      ref={containerRef}
       className="relative overflow-hidden rounded-lg border border-hb-red/30 bg-hb-bg p-6 font-body text-white sm:p-10"
       style={{ minHeight: 420 }}
     >
@@ -338,6 +380,7 @@ function StageAftermath() {
   // Starts above the heart's z-20 wrapper so popups always render on top of it
   // and the globe, regardless of click order.
   const nextZ = useRef(50);
+  const stageRef = useRef(null);
 
   const markers = useMemo(
     () => ({
@@ -417,6 +460,11 @@ function StageAftermath() {
         return prev.map((p) => (p.key === key ? { ...p, z: nextZ.current } : p));
       }
 
+      const el = stageRef.current;
+      const containerW = el ? el.clientWidth : 400;
+      const containerH = el ? el.clientHeight : 400;
+      const { x, y } = findNonOverlappingPosition(containerW, containerH, prev);
+
       return [
         ...prev,
         {
@@ -425,8 +473,8 @@ function StageAftermath() {
           title: marker.title,
           accent: marker.accent,
           text: marker.text,
-          x: 24 + prev.length * 28,
-          y: 24 + prev.length * 24,
+          x,
+          y,
           z: nextZ.current,
         },
       ];
@@ -459,7 +507,7 @@ function StageAftermath() {
         Stage 03 — The Aftermath
       </p>
 
-      <div className="relative" style={{ height: 400 }}>
+      <div ref={stageRef} className="relative" style={{ height: 400 }}>
         {/* Holo-table floor - fills the container; markers are real 3D points
             on the globe, projected to screen space every frame so they track
             the camera's orbit like they're attached to the rotating surface. */}
