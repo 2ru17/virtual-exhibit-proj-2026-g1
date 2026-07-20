@@ -75,7 +75,7 @@ Almost all Tailwind documentation online targets v3. Tailwind v4 uses a Vite plu
 `global.css` is marked DO NOT MODIFY by the instructor and uses a light theme. We needed our dark cyberpunk theme to apply to our exhibit only. The solution was importing `heartbleed-theme.css` exclusively inside `heartbleed.mdx` - Astro's CSS chunking ensures it only loads on that page.
 
 ### Popup positioning going off-screen
-Draggable popups in Stage 2 and 3 are spawned at computed cascade positions. On narrower viewports, higher-index popups spawn outside the visible area. We identified this as a known issue but have not yet implemented viewport clamping - the fix involves reading `containerRef.current.getBoundingClientRect()` on spawn and clamping `x` and `y` accordingly.
+Draggable popups in Stage 2 and 3 are spawned at computed cascade positions. On narrower viewports, higher-index popups spawn outside the visible area. We identified this as a known issue but have not yet implemented viewport clamping - the fix involves reading `containerRef.current.getBoundingClientRect()` on spawn and clamping `x` and `y` accordingly. Additional modifications were made to have the popups relatively appear more random via adding minimum values for randomizing positioning constants.
 
 ### Marker overlap on the Three.js globe
 Several markers in Stage 3 shared the same latitude (`theta` and `phi`) values, causing HTML labels like "Codenomicon" and "Imgur" to stack directly on top of each other. We resolved this by manually tweaking the spherical coordinates for each marker so they spread out visually across the globe's curvature.
