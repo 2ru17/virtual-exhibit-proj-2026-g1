@@ -1,7 +1,53 @@
-# Virtual Exhibit - Incremental Progress Report · Group 1
+# Virtual Exhibit - Final Submission · Group 1
 
 **Section:** S03 | **Group:** 1 | **Exhibit:** HEARTBLEED (CVE-2014-0160)
 **Deployed site:** [https://2ru17.github.io/virtual-exhibit-proj-2026-g1/](https://2ru17.github.io/virtual-exhibit-proj-2026-g1/)
+
+### Final Submission Checklist
+
+- [x] Website deployed and running with the correct GitHub Pages path
+- [x] Three-stage interactive simulation implemented end-to-end (healthy heartbeat, attack, aftermath)
+- [x] Custom cyberpunk-forensics visual identity applied and scoped to the exhibit only
+- [x] Technical discussions, creative discussions, aha moments, and challenges documented (see sections below)
+- [x] Original proposal preserved further down this README for reference
+- [x] AI/LLM disclosure included and current
+- [x] Reference citations included
+
+---
+
+## Final Development Documentation Index
+
+This README is kept **incremental**: every milestone (original proposal → mid-milestone submission → final submission) is preserved in full further down the document rather than overwritten, so the group's reasoning stays visible over time. For the final submission, the complete development record is organized as follows:
+
+- **Proposal** - the original exhibit concept, narrative discussion, tech stack plan, and mockup style guide, preserved unchanged under "Virtual Exhibit Case Proposal - Group 1" near the bottom of this file.
+- **Technical Discussions** - see the new [Technical Discussions](#technical-discussions-final) section directly below, plus the existing "Things Learned" table and "Challenges Faced" section, which together document the concrete engineering decisions, trade-offs, and debugging work behind the final build.
+- **Creative Discussions** - see "Creative Development Notes" below, covering the visual identity, color theory, and narrative-driven styling decisions that shaped the exhibit's look and feel.
+- **Aha Moments** - see "Aha Moments" below, covering the conceptual breakthroughs that happened while implementing the simulation.
+- **Challenges Encountered** - see "Challenges Faced" below, covering the concrete bugs and blockers the group hit and how each was resolved.
+- **Incremental Development Log** - see the new [Final Submission Development Log](#final-submission-development-log) below for what changed since the mid-milestone submission, and the "Incremental Development Log" under the Mid-Milestone section for the history before that.
+
+---
+
+## Technical Discussions (Final)
+
+Beyond the individual aha moments and challenges recorded below, the group had several standing technical discussions that shaped final architecture decisions:
+
+- **Astro islands vs. a full SPA** - the group discussed whether to build the simulation as a standalone React app embedded via an iframe, or as native Astro islands (`client:load`) inside the MDX content page. Islands won because they let the static educational prose ship with zero JS while only the simulation components hydrate, and because it kept the exhibit inside the shared museum layout instead of sandboxing it away from the rest of the site.
+- **Imperative Three.js vs. React Three Fiber** - the original proposal specified React Three Fiber for the Stage 3 globe. During implementation the group discussed the trade-off again and moved to raw imperative Three.js inside a `useEffect`, since the globe needed tight manual control over the animation loop, marker projection math, and `ResizeObserver` handling that an abstraction layer would have made harder to reason about.
+- **Global layout constraints vs. exhibit-specific styling** - because `ExhibitLayout.astro` and `global.css` are instructor-locked files, the group discussed how to achieve a fully custom dark theme without touching them. The agreed approach was to scope all overrides inside `heartbleed-theme.css`, imported only from `heartbleed.mdx`, using targeted `!important` overrides on shared layout classes (`.content__block`, `.padder`) so the override never leaks into other groups' exhibits.
+- **File structure for the museum merge** - the group discussed how multiple sections/groups would eventually merge into one repository, and agreed early to namespace all Group 1 code under `src/S03_Group1_heartbleed/` per the shared `Task-todo.txt` convention, which is what later made the structural merge conflicts resolvable rather than catastrophic.
+- **Realistic hex dumps vs. stylized leak visuals** - the proposal called for real Wireshark-style hex dumps in Stage 2. The group discussed this again against the exhibit's educational goal and decided a stylized "dripping binary + draggable memory popup" treatment communicated the *concept* of an out-of-bounds memory read more clearly to a general audience than literal packet bytes would.
+
+---
+
+## Final Submission Development Log
+
+Work completed since the mid-milestone submission, in addition to the "What We Built Since the Last Submission" summary below:
+
+- Finalized the Stage 3 Three.js globe, including manual spherical-coordinate tuning so affected-service markers (Codenomicon, Imgur, LastPass, OpenSSL, etc.) no longer overlap.
+- Fully documented the group's technical discussions, creative discussions, aha moments, and challenges directly in this README so the final submission's reasoning is self-contained.
+- Resolved the structural Git merge conflicts created by moving all components into `src/S03_Group1_heartbleed/`, using targeted `git rm` and selective `HEAD` acceptance for the MDX file.
+- Carried forward outstanding polish items (mobile Three.js fallback, popup viewport clamping, hex-dump content expansion) into the "Things To Do for Final Submission" list below as the group's known remaining scope.
 
 ---
 
@@ -178,9 +224,16 @@ This repository was assisted by an AI coding agent for documentation cleanup, de
 
 ### References
 
-- OpenSSL Security Advisory: [Heartbleed (CVE-2014-0160)](https://www.openssl.org/news/secadv/20140407.txt)
-- Heartbleed overview: [heartbleed.com](https://www.heartbleed.com/)
-- NVD entry: [CVE-2014-0160](https://nvd.nist.gov/vuln/detail/CVE-2014-0160)
+- National Institute of Standards and Technology. (n.d.). CVE-2014-0160. National Vulnerability Database. https://nvd.nist.gov/vuln/detail/CVE-2014-0160
+- OpenSSL Software Foundation. (2014, April 7). OpenSSL Security Advisory [Heartbleed (CVE-2014-0160)]. https://www.openssl.org/news/secadv/20140407.txt
+- Heartbleed. (n.d.). Heartbleed bug. https://heartbleed.com/
+- Carroll, S. (2021, April 7). _Heartbleed, seven years later: A look back at the bug that broke the internet_. Security Intelligence. https://securityintelligence.com/posts/heartbleed-seven-years-later-bug-broke-internet/
+- Codenomicon. (2014). _The Heartbleed Bug_. https://www.heartbleed.com/
+- Goodin, D. (2014, April 7). _Heartbleed bug exposes millions of SSL/TLS connections to snooping_. Ars Technica. https://arstechnica.com/information-technology/2014/04/heartbleed-bug-exposes-millions-of-ssl-tls-connections-to-snooping/
+- National Institute of Standards and Technology. (2014). _National Vulnerability Database: CVE-2014-0160_. https://nvd.nist.gov/vuln/detail/CVE-2014-0160
+- OpenSSL. (2014, April 7). _OpenSSL Security Advisory: Heartbleed (CVE-2014-0160)_. https://www.openssl.org/news/secadv/20140407.txt
+- The Linux Foundation. (2014). _Core Infrastructure Initiative_. https://www.linuxfoundation.org/projects/core-infrastructure-initiative/
+
 
 ---
 
